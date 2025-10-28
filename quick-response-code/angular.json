@@ -3,5 +3,31 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "ngx-quick-response-code": {
+      "projectType": "library",
+      "root": "projects/ngx-quick-response-code",
+      "sourceRoot": "projects/ngx-quick-response-code/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-quick-response-code/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-quick-response-code/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/ngx-quick-response-code/tsconfig.spec.json"
+          }
+        }
+      }
+    }
   }
 }
