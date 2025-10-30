@@ -10,6 +10,13 @@ const NUMERIC_GROUP_SIZE: number = 3;
 const ALPHANUMERIC_GROUP_SIZE: number = 2;
 const ALPHANUMERIC_MULTIPLIER: number = 45;
 
+const ErrorLevel = {
+    LOW: 0,
+    MEDIUM: 1,
+    QUARTILE: 2,
+    HIGH: 3
+};
+
 const VERSION = {
     MIN: 1,
     MAX: 40
