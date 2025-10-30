@@ -4,7 +4,7 @@ export class PositionMarker {
     constructor(private size: number) {
         this.TopRight = {
             x: 0,
-            y: this.size - POSITION_MARKER_SIZE,
+            y: this.size - POSITION_MARKER_SIZE
         }
 
         this.BottomLeft = {
@@ -13,9 +13,9 @@ export class PositionMarker {
         }
     }
 
-    TopRight: Coordinate;
-    BottomLeft: Coordinate;
-    TopLeft: Coordinate = {
+    public TopRight: Coordinate;
+    public BottomLeft: Coordinate;
+    public TopLeft: Coordinate = {
         x: 0,
         y: 0
     };
