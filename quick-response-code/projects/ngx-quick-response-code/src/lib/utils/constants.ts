@@ -37,6 +37,13 @@ const VERSION = {
 };
 const VERSION_MULTIPLIER: number = 4;
 
+const PENALTY = {
+    CONSECUTIVE_FIVE: 1,
+    SAME_TWO_CROSS_TWO: 1,
+    FINDER_PATTERN_SIMILARITY: 1,
+    UNEVEN_RATIO: 1,
+};
+
 const CHARACTER_COUNT = {
     RANGES: [
         {
