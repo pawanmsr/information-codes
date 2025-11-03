@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'lib-ngx-quick-response-code',
+  selector: 'ngx-quick-response-code',
   imports: [],
   template: `
-    <p>
+    <div>
       ngx-quick-response-code works!
-    </p>
+    </div>
   `,
   styles: ``
 })
