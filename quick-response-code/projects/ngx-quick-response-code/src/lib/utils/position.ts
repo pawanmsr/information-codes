@@ -1,16 +1,24 @@
 import { Coordinate } from "./types";
 
-export class PositionMarkers {
-    constructor(private size: number) {
+export class Markers {
+    constructor(private version: number) {
         this.topRight = {
             x: 0,
-            y: this.size - POSITION_MARKER_SIZE
+            y: this.size(version) - POSITION_MARKER_SIZE
         }
 
         this.bottomLeft = {
-            x: this.size - POSITION_MARKER_SIZE,
+            x: this.size(version) - POSITION_MARKER_SIZE,
             y: 0
         }
+    }
+
+    private size(version: number): number {
+        return version * 4 + 17;
+    }
+
+    private gaps(version: number): number {
+        return this.size(version) - 6 - 7;
     }
 
     public topRight: Coordinate;

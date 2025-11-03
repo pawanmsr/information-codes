@@ -23,7 +23,7 @@ class Alignment {
     }
 
     public asArray(): Coordinate[] {
-        let n = this.positions.length;
+        let n: number = this.positions.length;
 
         let coordinates: Coordinate[] = [];
         for (let i = 0; i < n; i++) {
