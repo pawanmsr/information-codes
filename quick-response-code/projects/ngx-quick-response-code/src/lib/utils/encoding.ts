@@ -11,5 +11,9 @@ function getEncoding(data: string) {
         return 0b0100;
     }
 
+    if (KANJI_KANA_REGULAR_EXPRESSION.test(data)) {
+        return 0b1000;
+    }
+
     return 0b0111;
 }
