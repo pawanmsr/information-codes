@@ -49,10 +49,10 @@ class Analyzer {
                 break;
         
             default:
+                // TODO: calculate length for ECI
                 break;
         }
 
-        // TODO: calculate length for ECI
         return 0;
     }
     
@@ -89,9 +89,9 @@ class Analyzer {
     }
 
     public encodedData(): Uint8Array {
-        let length: number = 4 + this.characterCountLength(this.version) + this.bitLength();
-
-        length += length % 8 ? 8 - length % 8 : 0;
+        let index: number = (this.version - 1) * 4 + this.level;
+        let length: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
+            CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
         let data: Uint8Array = new Uint8Array(length);
 
         // TODO: construct data
