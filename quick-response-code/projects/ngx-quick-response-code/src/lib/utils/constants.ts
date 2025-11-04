@@ -6,6 +6,35 @@ const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Exte
 const POSITION_MARKER_SIZE: number = 7;
 const ALIGNMENT_PATTERN_SIZE: number = 5;
 
+const VERSION = {
+    MIN: 1,
+    MAX: 40
+};
+
+const CHARACTER_COUNT = {
+    RANGES: [
+        {
+            MIN: 1,
+            MAX: 9
+        },
+        {
+            MIN: 10,
+            MAX: 26
+        },
+        {
+            MIN: 27,
+            MAX: 40
+        }
+    ],
+    BITS: [
+        // 1-9, 10-26,  27-40 //
+        10, 12, 14, // Numeric
+        9,  11, 13, // Alphanumeric
+        8,  16, 16, // Byte
+        8,  10, 12, // Kanji-Kana
+    ]
+};
+
 // Look Up Tables //
 
 const ALPHANUMERIC_TABLE: {[key: string]: number} = {
@@ -345,7 +374,7 @@ const MIXED_DATA_BITS = [
     23648,  18672,  13328,  10208,  // Version 40
 ];
 
-const BlockCount = {
+const BLOCK_COUNT = {
     GROUP_ONE: [
         // L,   M,  Q,  H //
         1,  1,  1,  1,  // Version 1
@@ -435,7 +464,7 @@ const BlockCount = {
     ]
 };
 
-const CodewordCount = {
+const CODEWORD_COUNT = {
     GROUP_ONE: [
         // L,   M,  Q,  H //
         19, 16, 13, 9,  // Version 1
