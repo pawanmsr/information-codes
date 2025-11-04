@@ -43,7 +43,7 @@ const CHARACTER_COUNT = {
 // Look Up Tables //
 
 const KANJI_TABLE: {[key: string]: number} = {
-
+    
 }
 
 const ALPHANUMERIC_TABLE: {[key: string]: number} = {

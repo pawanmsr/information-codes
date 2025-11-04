@@ -9,7 +9,7 @@ class KanjiEncoder {
                 continue;
             }
 
-            // TODO: throw error?
+            throw new Error(text[i] + " is not a valid Shift JIS character.");
         }
         
         return data;
