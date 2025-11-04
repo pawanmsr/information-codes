@@ -6,10 +6,15 @@ const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Exte
 const POSITION_MARKER_SIZE: number = 7;
 const ALIGNMENT_PATTERN_SIZE: number = 5;
 
+const NUMERIC_GROUP_SIZE: number = 3;
+const ALPHANUMERIC_GROUP_SIZE: number = 2;
+const ALPHANUMERIC_MULTIPLIER: number = 45;
+
 const VERSION = {
     MIN: 1,
     MAX: 40
 };
+const VERSION_MULTIPLIER: number = 4;
 
 const CHARACTER_COUNT = {
     RANGES: [
@@ -36,6 +41,10 @@ const CHARACTER_COUNT = {
 };
 
 // Look Up Tables //
+
+const KANJI_TABLE: {[key: string]: number} = {
+
+}
 
 const ALPHANUMERIC_TABLE: {[key: string]: number} = {
     '0': 0,
