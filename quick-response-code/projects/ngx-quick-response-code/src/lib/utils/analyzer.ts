@@ -100,7 +100,8 @@ class Analyzer {
             break;
         }
 
-        return CHARACTER_COUNT.BITS[(this.encoding - 1) * 3 + index];
+        return CHARACTER_COUNT.BITS[(this.encoding - 1) * 
+            CHARACTER_COUNT.RANGES.length + index];
     }
 
     public getDataLength(version: number, level: number): number {
@@ -157,7 +158,13 @@ class Analyzer {
     }
 
     private fillByte(index: number): number {
-        // TODO: conversion
+        let encoder: TextEncoder = new TextEncoder();
+        let characterArray: Uint8Array = encoder.encode(this.text);
+
+        for (const character of characterArray) {
+            index = this.fillData(index, character, 8);
+        }
+        
         return index % this.data.length;
     }
 
