@@ -18,7 +18,7 @@ export class Markers {
     }
 
     private size(version: number): number {
-        return version * 4 + 17;
+        return version * VERSION_MULTIPLIER + 17;
     }
 
     private distance(version: number): number {

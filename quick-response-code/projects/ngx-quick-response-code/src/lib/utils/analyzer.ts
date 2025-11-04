@@ -38,7 +38,7 @@ class Analyzer {
 
     public bitsInAlphaNumericGroup(groupSize: number): number {
         if (groupSize === 0) return 0;
-        return groupSize * ALPHANUMERIC_GROUP_SIZE + 1;
+        return groupSize * 5 + 1;
     }
 
     public bitLength(): number {
@@ -77,7 +77,7 @@ class Analyzer {
 
         while (this.version <= VERSION.MAX) {
             for (let level = 3; level >= this.level; level--) {
-                let index: number = (version - 1 + level) * 4 + this.encoding;
+                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + this.encoding;
                 if (CHARACTER_CAPACITY[index] < characterCount) continue;
                 
                 return version;
@@ -104,7 +104,7 @@ class Analyzer {
     }
 
     public getDataLength(version: number, level: number): number {
-        let index: number = (version - 1) * 4 + level;
+        let index: number = (version - 1) * VERSION_MULTIPLIER + level;
         let length: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
             CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
 
@@ -122,24 +122,37 @@ class Analyzer {
 
     private fillNumeric(index: number): number {
         let i: number = 0;
-        while (i + 3 <= this.data.length) {
-            let value: number = parseInt(this.text.substring(i, 3), 10);
-            index = this.fillData(index, value,
-                this.bitsInNumericGroup(NUMERIC_GROUP_SIZE));
+        while (i + NUMERIC_GROUP_SIZE <= this.data.length) {
+            let value: number = parseInt(this.text.substring(i, NUMERIC_GROUP_SIZE), 10);
+            index = this.fillData(index, value, this.bitsInNumericGroup(NUMERIC_GROUP_SIZE));
             
-            i += 3;
+            i += NUMERIC_GROUP_SIZE;
         }
 
         if (i < this.data.length) {
             let value: number = parseInt(this.text.substring(i), 10);
-            index = this.fillData(index, value, this.text.length - i);
+            index = this.fillData(index, value, this.bitsInAlphaNumericGroup(this.text.length - i));
         }
 
         return index % this.data.length;
     }
 
     private fillAlphanumeric(index: number): number {
-        // TODO: conversion
+        let i: number = 0;
+        while (i + ALPHANUMERIC_GROUP_SIZE <= this.data.length) {
+            let value: number = ALPHANUMERIC_TABLE[this.data[i]] * ALPHANUMERIC_MULTIPLIER +
+                ALPHANUMERIC_TABLE[this.data[i + 1]];
+            index = this.fillData(index, value,
+                this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE));
+
+            i += ALPHANUMERIC_GROUP_SIZE;
+        }
+
+        if (i < this.text.length) {
+            index = this.fillData(index, ALPHANUMERIC_TABLE[this.data[i]],
+                this.bitsInAlphaNumericGroup(1));
+        }
+
         return index % this.data.length;
     }
 
