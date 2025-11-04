@@ -10,6 +10,4 @@ import { Component } from '@angular/core';
   `,
   styles: ``
 })
-export class NgxQuickResponseCode {
-
-}
+export class QuickResponseCode {}

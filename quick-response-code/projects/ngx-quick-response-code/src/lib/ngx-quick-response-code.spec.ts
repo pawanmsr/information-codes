@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NgxQuickResponseCode } from './ngx-quick-response-code';
+import { QuickResponseCode } from './ngx-quick-response-code';
 
 describe('NgxQuickResponseCode', () => {
-  let component: NgxQuickResponseCode;
-  let fixture: ComponentFixture<NgxQuickResponseCode>;
+  let component: QuickResponseCode;
+  let fixture: ComponentFixture<QuickResponseCode>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NgxQuickResponseCode]
+      imports: [QuickResponseCode]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NgxQuickResponseCode);
+    fixture = TestBed.createComponent(QuickResponseCode);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
