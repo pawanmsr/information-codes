@@ -1,4 +1,6 @@
-class KanjiEncoder {
+import { KANJI_TABLE } from "./tables";
+
+export class KanjiEncoder {
     constructor() {}
 
     public encode(text: string): Uint16Array<ArrayBuffer> {
