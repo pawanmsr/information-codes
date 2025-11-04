@@ -31,16 +31,28 @@ class Analyzer {
         return 0b0111;
     }
 
+    public bitsInNumericGroup(groupSize: number): number {
+        if (groupSize === 0) return 0;
+        return groupSize * 3 + 1;
+    }
+
+    public bitsInAlphaNumericGroup(groupSize: number): number {
+        if (groupSize === 0) return 0;
+        return groupSize * ALPHANUMERIC_GROUP_SIZE + 1;
+    }
+
     public bitLength(): number {
         switch (this.encoding) {
             case 1:
-                return 10 * Math.floor(this.text.length / 3) + 
-                    (this.text.length % 3 ? (this.text.length % 3) * 3 + 1 : 0);
+                return this.bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
+                    Math.floor(this.text.length / NUMERIC_GROUP_SIZE) + 
+                        this.bitsInNumericGroup(this.text.length % NUMERIC_GROUP_SIZE);
                 break;
             
             case 2:
-                return 11 * Math.floor(this.text.length / 2) + 
-                    6 * (this.text.length & 1)
+                return this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
+                    Math.floor(this.text.length / ALPHANUMERIC_GROUP_SIZE) + 
+                        this.bitsInAlphaNumericGroup(this.text.length & 1)
                 break;
             
             case 3:
@@ -109,7 +121,20 @@ class Analyzer {
     }
 
     private fillNumeric(index: number): number {
-        // TODO: conversion
+        let i: number = 0;
+        while (i + 3 <= this.data.length) {
+            let value: number = parseInt(this.text.substring(i, 3), 10);
+            index = this.fillData(index, value,
+                this.bitsInNumericGroup(NUMERIC_GROUP_SIZE));
+            
+            i += 3;
+        }
+
+        if (i < this.data.length) {
+            let value: number = parseInt(this.text.substring(i), 10);
+            index = this.fillData(index, value, this.text.length - i);
+        }
+
         return index % this.data.length;
     }
 
@@ -155,7 +180,7 @@ class Analyzer {
                 break;
         }
 
-        index = this.fillData(index, 0, this.data.length - index - 1);
+        index = this.fillData(index, 0, this.data.length - index);
         
         return this.data;
     }
