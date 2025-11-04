@@ -164,12 +164,20 @@ class Analyzer {
         for (const character of characterArray) {
             index = this.fillData(index, character, 8);
         }
-        
+
         return index % this.data.length;
     }
 
     private fillKanjiKana(index: number): number {
-        // TODO: conversion
+        let encoder: KanjiEncoder = new KanjiEncoder();
+        let characterArray: Uint16Array = encoder.encode(this.text);
+
+        for (const character of characterArray) {
+            let value: number = character - 
+                (character >= 0x8140 && character <= 0x9FFC ? 0x8140 : 0xC140);
+            index = this.fillData(index, (value >> 8) * 0xC0 + (value & 0xFF), 13);
+        }
+
         return index % this.data.length;
     }
 
