@@ -1,8 +1,11 @@
 class Analyzer {
+    private version: number;
     private encoding: number;
 
-    constructor(private text: string) {
+
+    constructor(private text: string, private level: number) {
         this.encoding = this.encodingByte();
+        this.version = this.minimumVersion();
     }
 
     public encodingByte(): number {
@@ -49,24 +52,50 @@ class Analyzer {
                 break;
         }
 
+        // TODO: calculate length for ECI
         return 0;
     }
     
-    public minimumVersion(minimumErrorLevel: number): number | undefined {
-        let version: number = VERSION.MIN;
+    public minimumVersion(): number {
+        let version = VERSION.MIN;
         let characterCount: number = this.text.length;
 
-        while (version <= VERSION.MAX) {
-            for (let level = 3; level >= minimumErrorLevel; level--) {
+        while (this.version <= VERSION.MAX) {
+            for (let level = 3; level >= this.level; level--) {
                 let index: number = (version - 1 + level) * 4 + this.encoding;
                 if (CHARACTER_CAPACITY[index] < characterCount) continue;
-
+                
                 return version;
             }
 
             version++;
         }
 
-        return undefined;
+        return 0;
+    }
+
+    private characterCountLength(version: number): number {
+        let index: number = 0;
+        for (const range of CHARACTER_COUNT.RANGES) {
+            if (range.MIN > version || range.MAX < version) {
+                index++;
+                continue;
+            }
+
+            break;
+        }
+
+        return CHARACTER_COUNT.BITS[(this.encoding - 1) * 3 + index];
+    }
+
+    public encodedData(): Uint8Array {
+        let length: number = 4 + this.characterCountLength(this.version) + this.bitLength();
+
+        length += length % 8 ? 8 - length % 8 : 0;
+        let data: Uint8Array = new Uint8Array(length);
+
+        // TODO: construct data
+
+        return data;
     }
 }
