@@ -1,7 +1,7 @@
 class Analyzer {
     constructor(private text: string) {}
 
-    public encoding() {
+    public encodingByte(): number {
         if (NUMERIC_REGULAR_EXPRESSION.test(this.text)) {
             return 0b0001;
         }
@@ -19,5 +19,24 @@ class Analyzer {
         }
 
         return 0b0111;
+    }
+    
+    public minimumVersion(minimumErrorLevel: number): number | undefined {
+        let version: number = 1;
+        let encoding: number = this.encodingByte();
+        let characterCount: number = this.text.length;
+
+        while (version <= 40) {
+            for (let level = 3; level >= minimumErrorLevel; level--) {
+                let index: number = (version - 1 + level) * 4 + encoding;
+                if (CHARACTER_CAPACITY[index] < characterCount) continue;
+
+                return version;
+            }
+
+            version++;
+        }
+
+        return undefined;
     }
 }
