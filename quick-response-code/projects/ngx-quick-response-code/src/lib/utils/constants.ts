@@ -6,6 +6,8 @@ const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Exte
 const POSITION_MARKER_SIZE: number = 7;
 const ALIGNMENT_PATTERN_SIZE: number = 5;
 
+// Look Up Tables //
+
 const ALPHANUMERIC_TABLE: {[key: string]: number} = {
     '0': 0,
     '1': 1,
@@ -56,7 +58,7 @@ const ALPHANUMERIC_TABLE: {[key: string]: number} = {
 
 // Reference: ? Pending
 // TODO: present calculations
-const CHARACTER_CAPACITY_TABLE = [
+const CHARACTER_CAPACITY = [
     // Numeric, Alphanumeric, Byte, Kanji-Kana
     // Version 1
     41, 25, 17, 10, // L
@@ -343,4 +345,226 @@ const MIXED_DATA_BITS = [
     23648,  18672,  13328,  10208,  // Version 40
 ];
 
+const BlockCount = {
+    GROUP_ONE: [
+        // L,   M,  Q,  H //
+        1,  1,  1,  1,  // Version 1
+        1,  1,  1,  1,  // Version 2
+        1,  1,  2,  2,  // Version 3
+        1,  2,  2,  4,  // Version 4
+        1,  2,  2,  2,  // Version 5
+        2,  4,  4,  4,  // Version 6
+        2,  4,  2,  4,  // Version 7
+        2,  2,  4,  4,  // Version 8
+        2,  3,  4,  4,  // Version 9
+        2,  4,  6,  6,  // Version 10
+        4,  1,  4,  3,  // Version 11
+        2,  6,  4,  7,  // Version 12
+        4,  8,  8,  12, // Version 13
+        3,  4,  11, 11, // Version 14
+        5,  5,  5,  11, // Version 15
+        5,  7,  15, 3,  // Version 16
+        1,  10, 1,  2,  // Version 17
+        5,  9,  17, 2,  // Version 18
+        3,  3,  17, 9,  // Version 19
+        3,  3,  15, 15, // Version 20
+        4,  17, 17, 19, // Version 21
+        2,  17, 7,  34, // Version 22
+        4,  4,  11, 16, // Version 23
+        6,  6,  11, 30, // Version 24
+        8,  8,  7,  22, // Version 25
+        10, 19, 28, 33, // Version 26
+        8,  22, 8,  12, // Version 27
+        3,  3,  4,  11, // Version 28
+        7,  21, 1,  19, // Version 29
+        5,  19, 15, 23, // Version 30
+        13, 2,  42, 23, // Version 31
+        17, 10, 10, 19, // Version 32
+        17, 14, 29, 11, // Version 33
+        13, 14, 44, 59, // Version 34
+        12, 12, 39, 22, // Version 35
+        6,  6,  46, 2,  // Version 36
+        17, 29, 49, 24, // Version 37
+        4,  13, 48, 42, // Version 38
+        20, 40, 43, 10, // Version 39
+        19, 18, 34, 20, // Version 40
+    ],
 
+    GROUP_TWO: [
+        // L,   M,  Q,  H //
+        0,  0,  0,  0,  // Version 1
+        0,  0,  0,  0,  // Version 2
+        0,  0,  0,  0,  // Version 3
+        0,  0,  0,  0,  // Version 4
+        0,  0,  2,  2,  // Version 5
+        0,  0,  0,  0,  // Version 6
+        0,  0,  4,  1,  // Version 7
+        0,  2,  2,  2,  // Version 8
+        0,  2,  4,  4,  // Version 9
+        2,  1,  2,  2,  // Version 10
+        0,  4,  4,  8,  // Version 11
+        2,  2,  6,  4,  // Version 12
+        0,  1,  4,  4,  // Version 13
+        1,  5,  5,  5,  // Version 14
+        1,  5,  7,  7,  // Version 15
+        1,  3,  2,  13, // Version 16
+        5,  1,  15, 17, // Version 17
+        1,  4,  1,  19, // Version 18
+        4,  11, 4,  16, // Version 19
+        5,  13, 5,  10, // Version 20
+        4,  0,  6,  6,  // Version 21
+        7,  0,  16, 0,  // Version 22
+        5,  14, 14, 14, // Version 23
+        4,  14, 16, 2,  // Version 24
+        4,  13, 22, 13, // Version 25
+        2,  4,  6,  4,  // Version 26
+        4,  3,  26, 28, // Version 27
+        10, 23, 31, 31, // Version 28
+        7,  7,  37, 26, // Version 29
+        10, 10, 25, 25, // Version 30
+        3,  29, 1,  28, // Version 31
+        0,  23, 35, 35, // Version 32
+        1,  21, 19, 46, // Version 33
+        6,  23, 7,  1,  // Version 34
+        7,  26, 14, 41, // Version 35
+        14, 34, 10, 64, // Version 36
+        4,  14, 10, 46, // Version 37
+        18, 32, 14, 32, // Version 38
+        4,  7,  22, 67, // Version 39
+        6,  31, 34, 61, // Version 40
+    ]
+};
+
+const CodewordCount = {
+    GROUP_ONE: [
+        // L,   M,  Q,  H //
+        19, 16, 13, 9,  // Version 1
+        34, 28, 22, 16, // Version 2
+        55, 44, 17, 13, // Version 3
+        80, 32, 24, 9,  // Version 4
+        108,    43, 15, 11, // Version 5
+        68, 27, 19, 15, // Version 6
+        78, 31, 14, 13, // Version 7
+        97, 38, 18, 14, // Version 8
+        116,    36, 16, 12, // Version 9
+        68, 43, 19, 15, // Version 10
+        81, 50, 22, 12, // Version 11
+        92, 36, 20, 14, // Version 12
+        107,    37, 20, 11, // Version 13
+        115,    40, 16, 12, // Version 14
+        87, 41, 24, 12, // Version 15
+        98, 45, 19, 15, // Version 16
+        107,    46, 22, 14, // Version 17
+        120,    43, 22, 14, // Version 18
+        113,    44, 21, 13, // Version 19
+        107,    41, 24, 15, // Version 20
+        116,    42, 22, 16, // Version 21
+        111,    46, 24, 13, // Version 22
+        121,    47, 24, 15, // Version 23
+        117,    45, 24, 16, // Version 24
+        106,    47, 24, 15, // Version 25
+        114,    46, 22, 16, // Version 26
+        122,    45, 23, 15, // Version 27
+        117,    45, 24, 15, // Version 28
+        116,    45, 23, 15, // Version 29
+        115,    47, 24, 15, // Version 30
+        115,    46, 24, 15, // Version 31
+        115,    46, 24, 15, // Version 32
+        115,    46, 24, 15, // Version 33
+        115,    46, 24, 16, // Version 34
+        121,    47, 24, 15, // Version 35
+        121,    47, 24, 15, // Version 36
+        122,    46, 24, 15, // Version 37
+        122,    46, 24, 15, // Version 38
+        117,    47, 24, 15, // Version 39
+        118,    47, 24, 15, // Version 40
+    ],
+
+    GROUP_TWO: [
+        // L,   M,  Q,  H //
+        0,  0,  0,  0,  // Version 1
+        0,  0,  0,  0,  // Version 2
+        0,  0,  0,  0,  // Version 3
+        0,  0,  0,  0,  // Version 4
+        0,  0,  16, 12, // Version 5
+        0,  0,  0,  0,  // Version 6
+        0,  0,  15, 14, // Version 7
+        0,  39, 19, 15, // Version 8
+        0,  37, 17, 13, // Version 9
+        69, 44, 20, 16, // Version 10
+        0,  51, 23, 13, // Version 11
+        93, 37, 21, 15, // Version 12
+        0,  38, 21, 12, // Version 13
+        116,    41, 17, 13, // Version 14
+        88, 42, 25, 13, // Version 15
+        99, 46, 20, 16, // Version 16
+        108,    47, 23, 15, // Version 17
+        121,    44, 23, 15, // Version 18
+        114,    45, 22, 14, // Version 19
+        108,    42, 25, 16, // Version 20
+        117,    0,  23, 17, // Version 21
+        112,    0,  25, 0,  // Version 22
+        122,    48, 25, 16, // Version 23
+        118,    46, 25, 17, // Version 24
+        107,    48, 25, 16, // Version 25
+        115,    47, 23, 17, // Version 26
+        123,    46, 24, 16, // Version 27
+        118,    46, 25, 16, // Version 28
+        117,    46, 24, 16, // Version 29
+        116,    48, 25, 16, // Version 30
+        116,    47, 25, 16, // Version 31
+        0,  47, 25, 16, // Version 32
+        116,    47, 25, 16, // Version 33
+        116,    47, 25, 17, // Version 34
+        122,    48, 25, 16, // Version 35
+        122,    48, 25, 16, // Version 36
+        123,    47, 25, 16, // Version 37
+        123,    47, 25, 16, // Version 38
+        118,    48, 25, 16, // Version 39
+        119,    48, 25, 16, // Version 40
+    ]
+};
+
+const ERROR_CORRECTION_CODEWORDS_PER_BLOCK = [
+    // L,   M,  Q,  H //
+    7,  10, 13, 17, // Version 1
+    10, 16, 22, 28, // Version 2
+    15, 26, 18, 22, // Version 3
+    20, 18, 26, 16, // Version 4
+    26, 24, 18, 22, // Version 5
+    18, 16, 24, 28, // Version 6
+    20, 18, 18, 26, // Version 7
+    24, 22, 22, 26, // Version 8
+    30, 22, 20, 24, // Version 9
+    18, 26, 24, 28, // Version 10
+    20, 30, 28, 24, // Version 11
+    24, 22, 26, 28, // Version 12
+    26, 22, 24, 22, // Version 13
+    30, 24, 20, 24, // Version 14
+    22, 24, 30, 24, // Version 15
+    24, 28, 24, 30, // Version 16
+    28, 28, 28, 28, // Version 17
+    30, 26, 28, 28, // Version 18
+    28, 26, 26, 26, // Version 19
+    28, 26, 30, 28, // Version 20
+    28, 26, 28, 30, // Version 21
+    28, 28, 30, 24, // Version 22
+    30, 28, 30, 30, // Version 23
+    30, 28, 30, 30, // Version 24
+    26, 28, 30, 30, // Version 25
+    28, 28, 28, 30, // Version 26
+    30, 28, 30, 30, // Version 27
+    30, 28, 30, 30, // Version 28
+    30, 28, 30, 30, // Version 29
+    30, 28, 30, 30, // Version 30
+    30, 28, 30, 30, // Version 31
+    30, 28, 30, 30, // Version 32
+    30, 28, 30, 30, // Version 33
+    30, 28, 30, 30, // Version 34
+    30, 28, 30, 30, // Version 35
+    30, 28, 30, 30, // Version 36
+    30, 28, 30, 30, // Version 37
+    30, 28, 30, 30, // Version 38
+    30, 28, 30, 30, // Version 39
+    30, 28, 30, 30, // Version 40
+];
