@@ -104,13 +104,59 @@ class Analyzer {
             this.data[i] = value % 2;
             value /= 2;
         }
-        
+
         return (index + size) % this.data.length;
+    }
+
+    private fillNumeric(index: number): number {
+        // TODO: conversion
+        return index % this.data.length;
+    }
+
+    private fillAlphanumeric(index: number): number {
+        // TODO: conversion
+        return index % this.data.length;
+    }
+
+    private fillByte(index: number): number {
+        // TODO: conversion
+        return index % this.data.length;
+    }
+
+    private fillKanjiKana(index: number): number {
+        // TODO: conversion
+        return index % this.data.length;
     }
 
     public encode(): Uint8Array {
         let index: number = 0;
 
+        index = this.fillData(index, this.encoding, 4);
+        index = this.fillData(index, this.text.length,
+            this.characterCountLength(this.version))
+        switch (this.encoding) {
+            case 0:
+                index = this.fillNumeric(index);
+                break;
+            
+            case 1:
+                index = this.fillAlphanumeric(index);
+                break;
+            
+            case 2:
+                index = this.fillByte(index);
+                break;
+            
+            case 3:
+                index = this.fillKanjiKana(index);
+                break;
+        
+            default:
+                break;
+        }
+
+        index = this.fillData(index, 0, this.data.length - index - 1);
+        
         return this.data;
     }
 }
