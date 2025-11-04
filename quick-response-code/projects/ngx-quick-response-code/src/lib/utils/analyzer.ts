@@ -1,11 +1,14 @@
 class Analyzer {
     private version: number;
     private encoding: number;
-
+    private data: Uint8Array;
 
     constructor(private text: string, private level: number) {
         this.encoding = this.encodingByte();
         this.version = this.minimumVersion();
+
+        let length: number = this.getDataLength(this.version, this.level);
+        this.data = new Uint8Array(length);
     }
 
     public encodingByte(): number {
@@ -74,7 +77,7 @@ class Analyzer {
         return 0;
     }
 
-    private characterCountLength(version: number): number {
+    public characterCountLength(version: number): number {
         let index: number = 0;
         for (const range of CHARACTER_COUNT.RANGES) {
             if (range.MIN > version || range.MAX < version) {
@@ -88,14 +91,26 @@ class Analyzer {
         return CHARACTER_COUNT.BITS[(this.encoding - 1) * 3 + index];
     }
 
-    public encodedData(): Uint8Array {
-        let index: number = (this.version - 1) * 4 + this.level;
+    public getDataLength(version: number, level: number): number {
+        let index: number = (version - 1) * 4 + level;
         let length: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
             CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
-        let data: Uint8Array = new Uint8Array(length);
 
-        // TODO: construct data
+        return length;
+    }
 
-        return data;
+    private fillData(index: number, value: number, size: number): number {
+        for (let i = index + size - 1; i >= index; i--) {
+            this.data[i] = value % 2;
+            value /= 2;
+        }
+        
+        return (index + size) % this.data.length;
+    }
+
+    public encode(): Uint8Array {
+        let index: number = 0;
+
+        return this.data;
     }
 }
