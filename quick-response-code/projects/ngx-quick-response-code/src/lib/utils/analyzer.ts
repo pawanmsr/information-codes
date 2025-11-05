@@ -79,7 +79,7 @@ class Analyzer {
         let characterCount: number = this.text.length;
 
         while (this.version <= VERSION.MAX) {
-            for (let level = 3; level >= this.level; level--) {
+            for (let level = ErrorCorrectionLevel.HIGH; level >= this.level; level--) {
                 let index: number = (version - 1 + level) * VERSION_MULTIPLIER + this.encoding;
                 if (CHARACTER_CAPACITY[index] < characterCount) continue;
                 
