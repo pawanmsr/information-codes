@@ -10,8 +10,8 @@ class Analyzer {
         this.encoding = this.encodingByte();
         this.version = this.minimumVersion();
 
-        let length: number = 8 * this.totalDataCodewords(this.version, this.level);
-        this.data = new Uint8Array(length);
+        let length: number = this.totalDataCodewords(this.version, this.level);
+        this.data = new Uint8Array(length * BITS_IN_BYTE);
     }
 
     public encodingByte(): number {
@@ -46,24 +46,24 @@ class Analyzer {
 
     public bitLength(): number {
         switch (this.encoding) {
-            case 1:
+            case ENCODING.NUMERIC:
                 return this.bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / NUMERIC_GROUP_SIZE) + 
                         this.bitsInNumericGroup(this.text.length % NUMERIC_GROUP_SIZE);
                 break;
             
-            case 2:
+            case ENCODING.ALPHANUMERIC:
                 return this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / ALPHANUMERIC_GROUP_SIZE) + 
                         this.bitsInAlphaNumericGroup(this.text.length & 1)
                 break;
             
-            case 3:
-                return this.text.length * 8;
+            case ENCODING.BYTE:
+                return this.text.length * BITS_IN_BYTE;
                 break;
             
-            case 4:
-                return this.text.length * 13;
+            case ENCODING.KANJI:
+                return this.text.length * BITS_IN_KANJI;
                 break;
         
             default:
@@ -165,7 +165,7 @@ class Analyzer {
         let characterArray: Uint8Array = encoder.encode(this.text);
 
         for (const character of characterArray) {
-            index = this.fillData(index, character, 8);
+            index = this.fillData(index, character, BITS_IN_BYTE);
         }
 
         return index % this.data.length;
@@ -178,7 +178,7 @@ class Analyzer {
         for (const character of characterArray) {
             let value: number = character - 
                 (character >= 0x8140 && character <= 0x9FFC ? 0x8140 : 0xC140);
-            index = this.fillData(index, (value >> 8) * 0xC0 + (value & 0xFF), 13);
+            index = this.fillData(index, (value >> 8) * 0xC0 + (value & 0xFF), BITS_IN_KANJI);
         }
 
         return index % this.data.length;
@@ -189,7 +189,7 @@ class Analyzer {
 
         index = this.fillData(index, this.encoding, 4);
         index = this.fillData(index, this.text.length,
-            this.characterCountLength(this.version))
+            this.characterCountLength(this.version));
         switch (this.encoding) {
             case ENCODING.NUMERIC:
                 index = this.fillNumeric(index);
@@ -209,7 +209,7 @@ class Analyzer {
         
             default:
                 break;
-        }
+        };
         index = this.fillData(index, 0, this.data.length - index);
         
         return this.data;

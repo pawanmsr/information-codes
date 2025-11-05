@@ -10,6 +10,9 @@ const NUMERIC_GROUP_SIZE: number = 3;
 const ALPHANUMERIC_GROUP_SIZE: number = 2;
 const ALPHANUMERIC_MULTIPLIER: number = 45;
 
+const BITS_IN_BYTE: number = 8;
+const BITS_IN_KANJI: number = 13;
+
 const ERROR_CORRECTION_LEVEL = {
     LOW: 0,
     MEDIUM: 1,
