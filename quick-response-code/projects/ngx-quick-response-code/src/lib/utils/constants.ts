@@ -10,12 +10,20 @@ const NUMERIC_GROUP_SIZE: number = 3;
 const ALPHANUMERIC_GROUP_SIZE: number = 2;
 const ALPHANUMERIC_MULTIPLIER: number = 45;
 
-const ErrorCorrectionLevel = {
+const ERROR_CORRECTION_LEVEL = {
     LOW: 0,
     MEDIUM: 1,
     QUARTILE: 2,
     HIGH: 3
 };
+
+const ENCODING = {
+    NUMERIC: 0,
+    ALPHANUMERIC: 1,
+    BYTE: 2,
+    KANJI: 3,
+    ECI: 7
+}
 
 const VERSION = {
     MIN: 1,

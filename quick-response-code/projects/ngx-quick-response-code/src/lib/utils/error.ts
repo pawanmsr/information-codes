@@ -3,14 +3,14 @@ class ErrorCorrection {
 
     public blocks(version: number): number | undefined {
         switch (this.level) {
-            case ErrorCorrectionLevel.LOW:
+            case ERROR_CORRECTION_LEVEL.LOW:
                 // TODO
                 break;
-            case ErrorCorrectionLevel.MEDIUM:
+            case ERROR_CORRECTION_LEVEL.MEDIUM:
                 break;
-            case ErrorCorrectionLevel.QUARTILE:
+            case ERROR_CORRECTION_LEVEL.QUARTILE:
                 break;
-            case ErrorCorrectionLevel.HIGH:
+            case ERROR_CORRECTION_LEVEL.HIGH:
                 break;
 
             default:

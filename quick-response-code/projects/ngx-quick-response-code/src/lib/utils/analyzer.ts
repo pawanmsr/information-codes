@@ -10,28 +10,28 @@ class Analyzer {
         this.encoding = this.encodingByte();
         this.version = this.minimumVersion();
 
-        let length: number = this.getDataLength(this.version, this.level);
+        let length: number = 8 * this.totalDataCodewords(this.version, this.level);
         this.data = new Uint8Array(length);
     }
 
     public encodingByte(): number {
         if (NUMERIC_REGULAR_EXPRESSION.test(this.text)) {
-            return 0b0001;
+            return ENCODING.NUMERIC;
         }
 
         if (ALPHANUMERIC_REGULAR_EXPRESSION.test(this.text)) {
-            return 0b0010;
+            return ENCODING.ALPHANUMERIC;
         }
 
         if (BYTE_REGULAR_EXPRESSION.test(this.text)) {
-            return 0b0100;
+            return ENCODING.BYTE;
         }
 
         if (KANJI_KANA_REGULAR_EXPRESSION.test(this.text)) {
-            return 0b1000;
+            return ENCODING.KANJI;
         }
 
-        return 0b0111;
+        return ENCODING.ECI;
     }
 
     public bitsInNumericGroup(groupSize: number): number {
@@ -79,7 +79,7 @@ class Analyzer {
         let characterCount: number = this.text.length;
 
         while (this.version <= VERSION.MAX) {
-            for (let level = ErrorCorrectionLevel.HIGH; level >= this.level; level--) {
+            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= this.level; level--) {
                 let index: number = (version - 1 + level) * VERSION_MULTIPLIER + this.encoding;
                 if (CHARACTER_CAPACITY[index] < characterCount) continue;
                 
@@ -107,7 +107,7 @@ class Analyzer {
             CHARACTER_COUNT.RANGES.length + index];
     }
 
-    public getDataLength(version: number, level: number): number {
+    public totalDataCodewords(version: number, level: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + level;
         let length: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
             CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
@@ -191,26 +191,25 @@ class Analyzer {
         index = this.fillData(index, this.text.length,
             this.characterCountLength(this.version))
         switch (this.encoding) {
-            case 0:
+            case ENCODING.NUMERIC:
                 index = this.fillNumeric(index);
                 break;
             
-            case 1:
+            case ENCODING.ALPHANUMERIC:
                 index = this.fillAlphanumeric(index);
                 break;
             
-            case 2:
+            case ENCODING.BYTE:
                 index = this.fillByte(index);
                 break;
             
-            case 3:
+            case ENCODING.KANJI:
                 index = this.fillKanjiKana(index);
                 break;
         
             default:
                 break;
         }
-
         index = this.fillData(index, 0, this.data.length - index);
         
         return this.data;
