@@ -45,6 +45,30 @@ class ErrorCorrection {
 
         return divident.slice(0, n - 1);
     }
+    
+    private polynomialProduct(x: Uint8Array, y: Uint8Array): Uint8Array {
+        let z: Uint8Array = new Uint8Array(x.length + y.length - 1);
+        for (let i = 0; i < x.length; i++) {
+            for (let j = 0; j < y.length; j++) {
+                z[i + j] = this.arithmetic(z[i + j],
+                    this.multiply(x[i], y[j]));
+            }
+        }
+
+        return z;
+    }
+
+    private generatePolynomial(n: number): Uint8Array {
+        let coefficients: Uint8Array = new Uint8Array([this.powers[0]]);
+        for (let d = 0; d < n; d++) {
+            // Coefficients are elements of Galois(256).
+            // Elements in Galois Field are positive integers.
+            let multiplier: Uint8Array = new Uint8Array([this.powers[0], this.powers[d]]);
+            coefficients = this.polynomialProduct(coefficients, multiplier);
+        }
+
+        return coefficients;
+    }
 
     public totalCodewords(version: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
