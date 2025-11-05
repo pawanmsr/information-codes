@@ -1,3 +1,6 @@
+import { KanjiEncoder } from './kanji';
+import { ALPHANUMERIC_TABLE } from './tables';
+
 class Analyzer {
     private version: number;
     private encoding: number;
@@ -140,9 +143,9 @@ class Analyzer {
 
     private fillAlphanumeric(index: number): number {
         let i: number = 0;
-        while (i + ALPHANUMERIC_GROUP_SIZE <= this.data.length) {
-            let value: number = ALPHANUMERIC_TABLE[this.data[i]] * ALPHANUMERIC_MULTIPLIER +
-                ALPHANUMERIC_TABLE[this.data[i + 1]];
+        while (i + ALPHANUMERIC_GROUP_SIZE <= this.text.length) {
+            let value: number = ALPHANUMERIC_TABLE[this.text[i]] * ALPHANUMERIC_MULTIPLIER +
+                ALPHANUMERIC_TABLE[this.text[i + 1]];
             index = this.fillData(index, value,
                 this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE));
 
@@ -150,7 +153,7 @@ class Analyzer {
         }
 
         if (i < this.text.length) {
-            index = this.fillData(index, ALPHANUMERIC_TABLE[this.data[i]],
+            index = this.fillData(index, ALPHANUMERIC_TABLE[this.text[i]],
                 this.bitsInAlphaNumericGroup(1));
         }
 
