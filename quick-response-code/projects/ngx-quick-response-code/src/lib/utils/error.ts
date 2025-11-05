@@ -22,6 +22,15 @@ class ErrorCorrection {
     private arithmetic(x: number, y: number): number {
         return x ^ y;
     }
+    
+    private multiply(x: number, y: number): number {
+        let exponent: number = this.logs[x] + this.logs[y];
+        if (exponent >= FIELD_SIZE) {
+            exponent %= 255;
+        }
+
+        return this.powers[exponent];
+    }
 
     private polynomialDivision(divisor: Uint8Array, divident: Uint8Array): Uint8Array {
         let n: number = divisor.length;
