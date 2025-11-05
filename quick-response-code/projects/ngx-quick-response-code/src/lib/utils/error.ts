@@ -19,22 +19,9 @@ class ErrorCorrection {
         }
     }
 
-    public blocks(version: number): number | undefined {
-        switch (this.level) {
-            case ERROR_CORRECTION_LEVEL.LOW:
-                // TODO
-                break;
-            case ERROR_CORRECTION_LEVEL.MEDIUM:
-                break;
-            case ERROR_CORRECTION_LEVEL.QUARTILE:
-                break;
-            case ERROR_CORRECTION_LEVEL.HIGH:
-                break;
-
-            default:
-                break;
-        }
-
-        return undefined;
+    public totalCodewords(version: number): number {
+        let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
+        return ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
+            (BLOCK_COUNT.GROUP_ONE[index] + BLOCK_COUNT.GROUP_TWO[index]);
     }
 }
