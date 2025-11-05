@@ -19,6 +19,10 @@ class ErrorCorrection {
         }
     }
 
+    private arithmetic(x: number, y: number): number {
+        return x ^ y;
+    }
+
     public totalCodewords(version: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
         return ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
