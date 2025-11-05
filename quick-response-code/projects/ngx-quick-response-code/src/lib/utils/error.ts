@@ -1,5 +1,23 @@
 class ErrorCorrection {
-    constructor(private level: number) {}
+    constructor(private level: number) {
+        this.generateTables();
+    }
+
+    private logs: Uint8Array = new Uint8Array(FIELD_SIZE);
+    private powers: Uint8Array = new Uint8Array(FIELD_SIZE);
+
+    private generateTables(): void {
+        let element: number = 1;
+        for (let exponent = 0; exponent < FIELD_SIZE; exponent++) {
+            this.logs[element] = exponent;
+            this.powers[exponent] = element;
+
+            element <<= 1;
+            if (element >= FIELD_SIZE) {
+                element ^= FIELD_MODULO;
+            }
+        }
+    }
 
     public blocks(version: number): number | undefined {
         switch (this.level) {
