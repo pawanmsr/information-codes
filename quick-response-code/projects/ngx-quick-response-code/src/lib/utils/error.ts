@@ -48,7 +48,9 @@ class ErrorCorrection {
 
     public totalCodewords(version: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
-        return ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
+        let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
             (BLOCK_COUNT.GROUP_ONE[index] + BLOCK_COUNT.GROUP_TWO[index]);
+
+        return count;
     }
 }

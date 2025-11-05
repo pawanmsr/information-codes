@@ -103,16 +103,18 @@ export class Analyzer {
             break;
         }
 
-        return CHARACTER_COUNT.BITS[(this.encoding - 1) * 
+        let length: number = CHARACTER_COUNT.BITS[(this.encoding - 1) * 
             CHARACTER_COUNT.RANGES.length + index];
+        
+        return length;
     }
 
     public totalDataCodewords(version: number, level: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + level;
-        let length: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
+        let count: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
             CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
 
-        return length;
+        return count;
     }
 
     private fillData(index: number, value: number, size: number): number {
