@@ -1,7 +1,7 @@
 import { KanjiEncoder } from './kanji';
 import { ALPHANUMERIC_TABLE } from './tables';
 
-class Analyzer {
+export class Analyzer {
     private version: number;
     private encoding: number;
     private data: Uint8Array;
