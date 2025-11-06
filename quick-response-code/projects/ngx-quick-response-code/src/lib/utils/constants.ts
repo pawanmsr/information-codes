@@ -20,6 +20,9 @@ const ERROR_CORRECTION_LEVEL = {
     HIGH: 3
 };
 
+const FIELD_SIZE: number = 256;
+const FIELD_MODULO: number = 0b100011101;
+
 const ENCODING = {
     NUMERIC: 0,
     ALPHANUMERIC: 1,
