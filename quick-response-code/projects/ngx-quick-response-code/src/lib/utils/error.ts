@@ -72,7 +72,7 @@ class ErrorCorrection {
 
     private messagePolynomial(data: Uint8Array, version: number): Uint8Array {
         let length: number = data.length / BITS_IN_BYTE;
-        let padding: number = this.totalCodewords(version);
+        let padding: number = this.codewordsPerBlock(version);
         let coefficients: Uint8Array = new Uint8Array(length + padding);
         for (let i = 0; i < length; i++) {
             let value: number = 0;
@@ -86,6 +86,13 @@ class ErrorCorrection {
         }
 
         return coefficients;
+    }
+
+    public codewordsPerBlock(version: number): number {
+        let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
+        let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index];
+        
+        return count;
     }
 
     public totalCodewords(version: number): number {
