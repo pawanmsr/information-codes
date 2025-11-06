@@ -1,7 +1,11 @@
-import { errorCorrectionCodewordsPerBlock } from "./tables";
+import { totalErrorCorrectionCodewords } from "./tables";
 
-class ErrorCorrection {
-    constructor(private level: number) {
+export class ErrorCorrection {
+    private data: Uint8Array;
+
+    constructor(private version: number, private level: number) {
+        let count: number = totalErrorCorrectionCodewords(this.version, this.level);
+        this.data = new Uint8Array(count * BITS_IN_BYTE);
         this.generateTables();
     }
 
@@ -34,18 +38,18 @@ class ErrorCorrection {
         return this.powers[exponent];
     }
 
-    private polynomialDivision(divisor: Uint8Array, divident: Uint8Array): Uint8Array {
+    private polynomialDivision(divisor: Uint8Array, dividend: Uint8Array): Uint8Array {
         let n: number = divisor.length;
-        let m: number = divident.length;
+        let m: number = dividend.length;
         for (let i = m - 1; i >= n - 1; i--) {
-            let quotient: number = divident[i];
+            let quotient: number = dividend[i];
             for (let j = 0; j < n; j++) {
-                divident[i - j] = this.arithmetic(divident[i - j],
+                dividend[i - j] = this.arithmetic(dividend[i - j],
                     this.multiply(quotient, divisor[n - 1 - j]));
             }
         }
 
-        return divident.slice(0, n - 1);
+        return dividend.slice(0, n - 1);
     }
     
     private polynomialProduct(x: Uint8Array, y: Uint8Array): Uint8Array {
