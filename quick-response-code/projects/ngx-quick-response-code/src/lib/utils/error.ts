@@ -66,9 +66,10 @@ export class ErrorCorrection {
         return z;
     }
 
-    private generatePolynomial(n: number): Uint8Array {
+    private generatorPolynomial(): Uint8Array {
+        let degree: number = errorCorrectionCodewordsPerBlock(this.version, this.level);
         let coefficients: Uint8Array = new Uint8Array([this.powers[0]]);
-        for (let d = 0; d < n; d++) {
+        for (let d = 0; d < degree; d++) {
             // Coefficients are elements of Galois(256).
             // Elements in Galois Field are positive integers.
             let multiplier: Uint8Array = new Uint8Array([this.powers[0], this.powers[d]]);
@@ -96,7 +97,29 @@ export class ErrorCorrection {
         return coefficients;
     }
 
+    private fillData(index: number, value: number, size: number): number {
+        for (let i = index + size - 1; i >= index; i--) {
+            this.data[i] = value % 2;
+            value /= 2;
+        }
+
+        return (index + size) % this.data.length;
+    }
+
     public encode(): Uint8Array {
+        let index: number = 0;
+
+        for (const block of this.blocks) {
+            let dividend: Uint8Array = this.messagePolynomial(block);
+            let divisor: Uint8Array = this.generatorPolynomial();
+            let errorBlock: Uint8Array = this.polynomialDivision(divisor, dividend);
+
+            errorBlock.reverse();
+            for (const value of errorBlock) {
+                this.fillData(index, value, BITS_IN_BYTE);
+            }
+        }
+
         return this.data;
     }
 }
