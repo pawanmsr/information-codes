@@ -23,6 +23,20 @@ class ErrorCorrection {
         return x ^ y;
     }
 
+    private polynomialDivision(divisor: Uint8Array, divident: Uint8Array): Uint8Array {
+        let n: number = divisor.length;
+        let m: number = divident.length;
+        for (let i = m - 1; i >= m - n; i--) {
+            let quotient: number = divident[i];
+            for (let j = 0; j < n; j++) {
+                divident[j + m - n] = this.arithmetic(divident[j + m - n],
+                    this.multiply(quotient, divisor[j]));
+            }
+        }
+
+        return divident.slice(0, n);
+    }
+
     public totalCodewords(version: number): number {
         let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
         return ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
