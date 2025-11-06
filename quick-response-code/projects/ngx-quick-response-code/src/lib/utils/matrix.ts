@@ -1,5 +1,5 @@
-class Mask {
-    constructor(private pattern: number) {}
+class Matrix {
+    constructor() {}
 
     public condition(pattern: number, row: number, column: number): boolean {
         switch (pattern) {
@@ -33,5 +33,30 @@ class Mask {
         }
 
         return false;
+    }
+ 
+    public interleave(blocks: Uint8Array[]): Uint8Array {
+        let length: number = 0;
+        blocks.forEach(block => {
+            length += block.length;
+        });
+
+        let interleaved: Uint8Array = new Uint8Array(length);
+        
+        let i: number = 0;
+        let j: number = 0;
+        while (i < length) {
+            for (const block of blocks) {
+                if (j >= block.length) continue;
+                for (let k = 0; k < BITS_IN_BYTE; k++) {
+                    interleaved[i] = block[j + k];
+                    i++;
+                }
+            }
+
+            j += BITS_IN_BYTE;
+        }
+
+        return interleaved;
     }
 }

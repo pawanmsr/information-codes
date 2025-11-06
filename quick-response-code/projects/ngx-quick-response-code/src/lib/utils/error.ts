@@ -1,4 +1,4 @@
-import { errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
+import { blockCount, errorCorrectionCodewordsPerBlock, tableIndex, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {
     private data: Uint8Array;
@@ -66,9 +66,10 @@ export class ErrorCorrection {
         return z;
     }
 
-    private generatePolynomial(n: number): Uint8Array {
+    private generatorPolynomial(): Uint8Array {
+        let degree: number = errorCorrectionCodewordsPerBlock(this.version, this.level);
         let coefficients: Uint8Array = new Uint8Array([this.powers[0]]);
-        for (let d = 0; d < n; d++) {
+        for (let d = 0; d < degree; d++) {
             // Coefficients are elements of Galois(256).
             // Elements in Galois Field are positive integers.
             let multiplier: Uint8Array = new Uint8Array([this.powers[0], this.powers[d]]);
@@ -96,7 +97,48 @@ export class ErrorCorrection {
         return coefficients;
     }
 
+    private errorBlock(remainder: Uint8Array): Uint8Array {
+        let length: number = remainder.length * BITS_IN_BYTE;
+        let block: Uint8Array = new Uint8Array(length);
+
+        remainder.reverse();
+        for (let i = 0; i < remainder.length; i++) {
+            for (let j = 0; j < BITS_IN_BYTE; j++) {
+                block[(i + 1) * BITS_IN_BYTE - j - 1] = remainder[i] % 2;
+                remainder[i] >>= 1;
+            }
+        }
+        
+        return block;
+    }
+
     public encode(): Uint8Array {
+        let index: number = 0;
+
+        for (const block of this.blocks) {
+            let divisor: Uint8Array = this.generatorPolynomial();
+            let dividend: Uint8Array = this.messagePolynomial(block);
+            let remainder: Uint8Array = this.polynomialDivision(divisor, dividend);
+
+            let errorBlock: Uint8Array = this.errorBlock(remainder);
+            for (const value of errorBlock) {
+                this.data[index] = value;
+                index++;
+            }
+        }
+
         return this.data;
+    }
+
+    public errorBlocks(): Uint8Array[] {
+        let index: number = 0;
+        let blocks: Uint8Array[] = [];
+        for (let i = 0; i < blockCount(this.version, this.level); i++) {
+            blocks.push(this.data.slice(index,
+                index + errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE - 1));
+            index += errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE;
+        }
+
+        return blocks;
     }
 }
