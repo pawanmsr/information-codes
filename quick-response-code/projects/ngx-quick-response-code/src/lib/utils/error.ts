@@ -133,11 +133,10 @@ export class ErrorCorrection {
     public errorBlocks(): Uint8Array[] {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
-        let look: number = tableIndex(this.version, this.level);
         for (let i = 0; i < blockCount(this.version, this.level); i++) {
             blocks.push(this.data.slice(index,
-                index + ERROR_CORRECTION_CODEWORDS_PER_BLOCK[look] * BITS_IN_BYTE - 1));
-            index += ERROR_CORRECTION_CODEWORDS_PER_BLOCK[look] * BITS_IN_BYTE;
+                index + errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE - 1));
+            index += errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE;
         }
 
         return blocks;
