@@ -1,3 +1,5 @@
+import { errorCorrectionCodewordsPerBlock } from "./tables";
+
 class ErrorCorrection {
     constructor(private level: number) {
         this.generateTables();
@@ -68,38 +70,5 @@ class ErrorCorrection {
         }
 
         return coefficients;
-    }
-
-    private messagePolynomial(data: Uint8Array, version: number): Uint8Array {
-        let length: number = data.length / BITS_IN_BYTE;
-        let padding: number = this.codewordsPerBlock(version);
-        let coefficients: Uint8Array = new Uint8Array(length + padding);
-        for (let i = 0; i < length; i++) {
-            let value: number = 0;
-            let multiplier: number = 1;
-            for (let j = (i + 1) * BITS_IN_BYTE - 1; j >= i * BITS_IN_BYTE; j--) {
-                value += data[j] * multiplier;
-                multiplier <<= 1;
-            }
-
-            coefficients[length + padding - i] = value;
-        }
-
-        return coefficients;
-    }
-
-    public codewordsPerBlock(version: number): number {
-        let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
-        let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index];
-        
-        return count;
-    }
-
-    public totalCodewords(version: number): number {
-        let index: number = (version - 1) * VERSION_MULTIPLIER + this.level;
-        let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index] * 
-            (BLOCK_COUNT.GROUP_ONE[index] + BLOCK_COUNT.GROUP_TWO[index]);
-
-        return count;
     }
 }

@@ -1,33 +1,35 @@
 import { KanjiEncoder } from './kanji';
-import { ALPHANUMERIC_TABLE } from './tables';
+import { ALPHANUMERIC_TABLE } from './tables'
+import { characterCountLength, errorCorrectionCodewordsPerBlock, tableIndex, totalDataCodewords } from './tables';
+import { Specification } from './types';
 
 export class Analyzer {
-    private version: number;
-    private encoding: number;
+    private specification: Specification;
     private data: Uint8Array;
 
-    constructor(private text: string, private level: number) {
-        this.encoding = this.encodingByte();
-        this.version = this.minimumVersion();
+    constructor(private text: string) {
+        this.specification = this.optimalSpecification(this.text);
 
-        let length: number = this.totalDataCodewords(this.version, this.level);
-        this.data = new Uint8Array(length * BITS_IN_BYTE);
+        let count: number = totalDataCodewords(this.specification.version,
+            this.specification.level);
+        this.data = new Uint8Array(count * BITS_IN_BYTE);
+        this.encode();
     }
 
-    public encodingByte(): number {
-        if (NUMERIC_REGULAR_EXPRESSION.test(this.text)) {
+    public encodingByte(text: string): number {
+        if (NUMERIC_REGULAR_EXPRESSION.test(text)) {
             return ENCODING.NUMERIC;
         }
 
-        if (ALPHANUMERIC_REGULAR_EXPRESSION.test(this.text)) {
+        if (ALPHANUMERIC_REGULAR_EXPRESSION.test(text)) {
             return ENCODING.ALPHANUMERIC;
         }
 
-        if (BYTE_REGULAR_EXPRESSION.test(this.text)) {
+        if (BYTE_REGULAR_EXPRESSION.test(text)) {
             return ENCODING.BYTE;
         }
 
-        if (KANJI_KANA_REGULAR_EXPRESSION.test(this.text)) {
+        if (KANJI_KANA_REGULAR_EXPRESSION.test(text)) {
             return ENCODING.KANJI;
         }
 
@@ -45,7 +47,7 @@ export class Analyzer {
     }
 
     public bitLength(): number {
-        switch (this.encoding) {
+        switch (this.specification.encoding) {
             case ENCODING.NUMERIC:
                 return this.bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / NUMERIC_GROUP_SIZE) + 
@@ -74,47 +76,34 @@ export class Analyzer {
         return 0;
     }
     
-    public minimumVersion(): number {
+    private optimalSpecification(text: string): Specification {
+        let encoding: number = this.encodingByte(text);
+        
+        let characterCount: number = text.length;
         let version = VERSION.MIN;
-        let characterCount: number = this.text.length;
 
-        while (this.version <= VERSION.MAX) {
-            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= this.level; level--) {
-                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + this.encoding;
-                if (CHARACTER_CAPACITY[index] < characterCount) continue;
+        while (version <= VERSION.MAX) {
+            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= ERROR_CORRECTION_LEVEL.LOW; level--) {
+                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + encoding;
+                if (CHARACTER_CAPACITY[index] < characterCount) {
+                    continue;
+                }
                 
-                return version;
+                return {
+                    encoding: encoding,
+                    version: version,
+                    level: level
+                };
             }
 
             version++;
         }
 
-        return 0;
-    }
-
-    public characterCountLength(version: number): number {
-        let index: number = 0;
-        for (const range of CHARACTER_COUNT.RANGES) {
-            if (range.MIN > version || range.MAX < version) {
-                index++;
-                continue;
-            }
-
-            break;
-        }
-
-        let length: number = CHARACTER_COUNT.BITS[(this.encoding - 1) * 
-            CHARACTER_COUNT.RANGES.length + index];
-        
-        return length;
-    }
-
-    public totalDataCodewords(version: number, level: number): number {
-        let index: number = (version - 1) * VERSION_MULTIPLIER + level;
-        let count: number = CODEWORD_COUNT.GROUP_ONE[index] * BLOCK_COUNT.GROUP_ONE[index] +
-            CODEWORD_COUNT.GROUP_TWO[index] * BLOCK_COUNT.GROUP_TWO[index];
-
-        return count;
+        return {
+            encoding: encoding,
+            version: 0,
+            level: -1
+        };
     }
 
     private fillData(index: number, value: number, size: number): number {
@@ -137,7 +126,8 @@ export class Analyzer {
 
         if (i < this.data.length) {
             let value: number = parseInt(this.text.substring(i), 10);
-            index = this.fillData(index, value, this.bitsInAlphaNumericGroup(this.text.length - i));
+            index = this.fillData(index, value,
+                this.bitsInAlphaNumericGroup(this.text.length - i));
         }
 
         return index % this.data.length;
@@ -189,10 +179,10 @@ export class Analyzer {
     public encode(): Uint8Array {
         let index: number = 0;
 
-        index = this.fillData(index, this.encoding, 4);
+        index = this.fillData(index, this.specification.encoding, 4);
         index = this.fillData(index, this.text.length,
-            this.characterCountLength(this.version));
-        switch (this.encoding) {
+            characterCountLength(this.specification.version, this.specification.encoding));
+        switch (this.specification.encoding) {
             case ENCODING.NUMERIC:
                 index = this.fillNumeric(index);
                 break;
@@ -214,6 +204,55 @@ export class Analyzer {
         };
         index = this.fillData(index, 0, this.data.length - index);
         
+        if (index !== 0) {
+            throw Error("Data sequence and size mismatch.")
+        }
+
         return this.data;
+    }
+
+    public blocks(): Uint8Array[] {
+        let index: number = 0;
+        let blocks: Uint8Array[] = [];
+        let ti: number = tableIndex(this.specification.version, this.specification.level);
+        for (let i = 0; i < BLOCK_COUNT.GROUP_ONE[ti]; i++) {
+            blocks.push(this.data.slice(index,
+                index + CODEWORD_COUNT.GROUP_ONE[ti] * BITS_IN_BYTE - 1));
+            index += CODEWORD_COUNT.GROUP_ONE[ti] * BITS_IN_BYTE;
+        }
+
+        for (let i = 0; i < BLOCK_COUNT.GROUP_TWO[ti]; i++) {
+            blocks.push(this.data.slice(index,
+                index + CODEWORD_COUNT.GROUP_TWO[ti] * BITS_IN_BYTE - 1));
+            index += CODEWORD_COUNT.GROUP_TWO[ti] * BITS_IN_BYTE;
+        }
+
+        return blocks;
+    }
+
+    public messagePolynomials(): Uint8Array[] {
+        let polynomials: Uint8Array[] = [];
+        let blocks: Uint8Array[] = this.blocks();
+
+        for (const block of blocks) {
+            let length: number = block.length / BITS_IN_BYTE;
+            let padding: number = errorCorrectionCodewordsPerBlock(this.specification.version,
+                this.specification.level);
+            let coefficients: Uint8Array = new Uint8Array(length + padding);
+            for (let i = 0; i < length; i++) {
+                let value: number = 0;
+                let multiplier: number = 1;
+                for (let j = (i + 1) * BITS_IN_BYTE - 1; j >= i * BITS_IN_BYTE; j--) {
+                    value += block[j] * multiplier;
+                    multiplier <<= 1;
+                }
+
+                coefficients[length + padding - i] = value;
+            }
+
+            polynomials.push(coefficients);
+        }
+
+        return polynomials;
     }
 }
