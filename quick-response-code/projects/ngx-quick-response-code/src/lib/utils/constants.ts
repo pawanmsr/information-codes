@@ -10,6 +10,27 @@ const NUMERIC_GROUP_SIZE: number = 3;
 const ALPHANUMERIC_GROUP_SIZE: number = 2;
 const ALPHANUMERIC_MULTIPLIER: number = 45;
 
+const BITS_IN_BYTE: number = 8;
+const BITS_IN_KANJI: number = 13;
+
+const ERROR_CORRECTION_LEVEL = {
+    LOW: 0,
+    MEDIUM: 1,
+    QUARTILE: 2,
+    HIGH: 3
+};
+
+const FIELD_SIZE: number = 256;
+const FIELD_MODULO: number = 0b100011101;
+
+const ENCODING = {
+    NUMERIC: 0,
+    ALPHANUMERIC: 1,
+    BYTE: 2,
+    KANJI: 3,
+    ECI: 7
+}
+
 const VERSION = {
     MIN: 1,
     MAX: 40
