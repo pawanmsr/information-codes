@@ -1,4 +1,4 @@
-import { errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
+import { blockCount, errorCorrectionCodewordsPerBlock, tableIndex, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {
     private data: Uint8Array;
@@ -97,29 +97,49 @@ export class ErrorCorrection {
         return coefficients;
     }
 
-    private fillData(index: number, value: number, size: number): number {
-        for (let i = index + size - 1; i >= index; i--) {
-            this.data[i] = value % 2;
-            value /= 2;
-        }
+    private errorBlock(remainder: Uint8Array): Uint8Array {
+        let length: number = remainder.length * BITS_IN_BYTE;
+        let block: Uint8Array = new Uint8Array(length);
 
-        return (index + size) % this.data.length;
+        remainder.reverse();
+        for (let i = 0; i < remainder.length; i++) {
+            for (let j = 0; j < BITS_IN_BYTE; j++) {
+                block[(i + 1) * BITS_IN_BYTE - j - 1] = remainder[i] % 2;
+                remainder[i] >>= 1;
+            }
+        }
+        
+        return block;
     }
 
     public encode(): Uint8Array {
         let index: number = 0;
 
         for (const block of this.blocks) {
-            let dividend: Uint8Array = this.messagePolynomial(block);
             let divisor: Uint8Array = this.generatorPolynomial();
-            let errorBlock: Uint8Array = this.polynomialDivision(divisor, dividend);
+            let dividend: Uint8Array = this.messagePolynomial(block);
+            let remainder: Uint8Array = this.polynomialDivision(divisor, dividend);
 
-            errorBlock.reverse();
+            let errorBlock: Uint8Array = this.errorBlock(remainder);
             for (const value of errorBlock) {
-                this.fillData(index, value, BITS_IN_BYTE);
+                this.data[index] = value;
+                index++;
             }
         }
 
         return this.data;
+    }
+
+    public errorBlocks(): Uint8Array[] {
+        let index: number = 0;
+        let blocks: Uint8Array[] = [];
+        let look: number = tableIndex(this.version, this.level);
+        for (let i = 0; i < blockCount(this.version, this.level); i++) {
+            blocks.push(this.data.slice(index,
+                index + ERROR_CORRECTION_CODEWORDS_PER_BLOCK[look] * BITS_IN_BYTE - 1));
+            index += ERROR_CORRECTION_CODEWORDS_PER_BLOCK[look] * BITS_IN_BYTE;
+        }
+
+        return blocks;
     }
 }
