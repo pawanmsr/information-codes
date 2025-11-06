@@ -70,18 +70,19 @@ class ErrorCorrection {
         return coefficients;
     }
 
-    private messagePolynomial(data: Uint8Array): Uint8Array {
+    private messagePolynomial(data: Uint8Array, version: number): Uint8Array {
         let length: number = data.length / BITS_IN_BYTE;
-        let coefficients: Uint8Array = new Uint8Array(length);
+        let padding: number = this.totalCodewords(version);
+        let coefficients: Uint8Array = new Uint8Array(length + padding);
         for (let i = 0; i < length; i++) {
             let value: number = 0;
             let multiplier: number = 1;
             for (let j = (i + 1) * BITS_IN_BYTE - 1; j >= i * BITS_IN_BYTE; j--) {
                 value += data[j] * multiplier;
-                multiplier *= 2;
+                multiplier <<= 1;
             }
 
-            coefficients[i] = value;
+            coefficients[length + padding - i] = value;
         }
 
         return coefficients;
