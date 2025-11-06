@@ -26,15 +26,15 @@ class ErrorCorrection {
     private polynomialDivision(divisor: Uint8Array, divident: Uint8Array): Uint8Array {
         let n: number = divisor.length;
         let m: number = divident.length;
-        for (let i = m - 1; i >= m - n; i--) {
+        for (let i = m - 1; i >= n - 1; i--) {
             let quotient: number = divident[i];
             for (let j = 0; j < n; j++) {
-                divident[j + m - n] = this.arithmetic(divident[j + m - n],
-                    this.multiply(quotient, divisor[j]));
+                divident[i - j] = this.arithmetic(divident[i - j],
+                    this.multiply(quotient, divisor[n - 1 - j]));
             }
         }
 
-        return divident.slice(0, n);
+        return divident.slice(0, n - 1);
     }
 
     public totalCodewords(version: number): number {
