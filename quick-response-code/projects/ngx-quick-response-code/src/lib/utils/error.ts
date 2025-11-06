@@ -1,4 +1,4 @@
-import { blockCount, errorCorrectionCodewordsPerBlock, tableIndex, totalErrorCorrectionCodewords } from "./tables";
+import { blockCount, errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {
     private data: Uint8Array;

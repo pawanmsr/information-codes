@@ -1,7 +1,12 @@
+import { Coordinate } from "./types";
+
 class Matrix {
     private matrix: Uint8Array;
+    private special: Uint8Array;
+    
     constructor(private size: number) {
         this.matrix = new Uint8Array(size * size);
+        this.special = new Uint8Array(size * size);
     }
 
     public condition(pattern: number, row: number, column: number): boolean {
@@ -38,7 +43,37 @@ class Matrix {
         return false;
     }
 
-    public placeAlignmentPatterns(): void {
+    public placeAlignmentPatterns(coordinates: Coordinate[]): void {
+        // TODO
+    }
+
+    public placeFinderPatterns(coordinates: Coordinate[]): void {
+        // TODO
+    }
+
+    public addTimingPattern(): void {
+        // TODO
+    }
+
+    public addFormatInformation(): void {
+        // TODO
+        // Dark module
+    }
+
+    public addVersionInformation(): void {
+        // TODO
+    }
+
+    private addData(data: Uint8Array): void {
+        // TODO
+    }
+
+    public optimalMaskPattern(): number {
+        // TODO
+        return 0;
+    }
+
+    private mask(): void {
         // TODO
     }
 
