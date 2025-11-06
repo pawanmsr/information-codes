@@ -1,5 +1,5 @@
-class Mask {
-    constructor(private pattern: number) {}
+class Matrix {
+    constructor() {}
 
     public condition(pattern: number, row: number, column: number): boolean {
         switch (pattern) {
