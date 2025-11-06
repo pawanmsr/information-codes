@@ -57,7 +57,7 @@ export class Analyzer {
             case ENCODING.ALPHANUMERIC:
                 return this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / ALPHANUMERIC_GROUP_SIZE) + 
-                        this.bitsInAlphaNumericGroup(this.text.length & 1)
+                        this.bitsInAlphaNumericGroup(this.text.length & 1);
                 break;
             
             case ENCODING.BYTE:
@@ -75,15 +75,25 @@ export class Analyzer {
 
         return 0;
     }
+
+    public getVersion(): number {
+        return this.specification.version;
+    }
+
+    public setMinimumVersionAndLevel(version: number, level: number): Specification {
+        this.specification = this.optimalSpecification(version, level);
+        return this.specification;
+    }
     
-    private optimalSpecification(): Specification {
+    private optimalSpecification(minimumVersion: number = VERSION.MIN,
+        minimumLevel: number = ERROR_CORRECTION_LEVEL.LOW): Specification {
         let encoding: number = this.encodingByte();
         
         let characterCount: number = this.text.length;
-        let version = VERSION.MIN;
+        let version: number = minimumVersion;
 
         while (version <= VERSION.MAX) {
-            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= ERROR_CORRECTION_LEVEL.LOW; level--) {
+            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= minimumLevel; level--) {
                 let index: number = (version - 1 + level) * VERSION_MULTIPLIER + encoding;
                 if (CHARACTER_CAPACITY[index] < characterCount) {
                     continue;
