@@ -24,7 +24,7 @@ export class Matrix {
                 return (row + column) % 3 === 0;
                 break;
             case 4:
-                return (row / 2 + column / 3) % 2 === 0;
+                return (Math.floor(row / 2) + Math.floor(column / 3)) % 2 === 0;
                 break;
             case 5:
                 return (row + column) % 2 + (row * column) % 3 === 0;
@@ -361,7 +361,7 @@ export class Matrix {
         return penalty;
     }
 
-    public applyMask(): void {
+    public applyMask(): number {
         // Find optimal mask pattern
         let minimumMaskPenalty: number = -1;
         let optimalMaskPattern: number = -1;
@@ -386,6 +386,8 @@ export class Matrix {
                 this.matrix[this.index(i, j)] = module;
             }
         }
+
+        return optimalMaskPattern;
     }
 
     public interleave(blocks: Uint8Array[]): Uint8Array {

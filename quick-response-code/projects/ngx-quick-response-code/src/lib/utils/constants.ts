@@ -16,10 +16,10 @@ const BITS_IN_BYTE: number = 8;
 const BITS_IN_KANJI: number = 13;
 
 const ERROR_CORRECTION_LEVEL = {
-    LOW: 0,
-    MEDIUM: 1,
-    QUARTILE: 2,
-    HIGH: 3
+    LOW: 1,
+    MEDIUM: 0,
+    QUARTILE: 3,
+    HIGH: 2
 };
 
 const FIELD_SIZE: number = 256;
