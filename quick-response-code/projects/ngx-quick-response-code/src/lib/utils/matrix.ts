@@ -113,7 +113,7 @@ export class Matrix {
 
     public addFormatInformation(format: Uint8Array): void {
         let i: number = 0;
-        for (let k = 0; k < POSITION_MARKER_SIZE + 2; k++) {
+        for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
             if (this.set(format[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
                 i++;
             }
@@ -126,14 +126,14 @@ export class Matrix {
         }
 
         let j: number = 0;
-        for (let k = 0; k < POSITION_MARKER_SIZE + 1; k++) {
-            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - 1 - k), true)) {
+        for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
+            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
                 j++;
             }
         }
 
-        for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
-            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+        for (let k = POSITION_MARKER_SIZE + 1; k > 0; k--) {
+            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - k), true)) {
                 j++;
             }
         }
