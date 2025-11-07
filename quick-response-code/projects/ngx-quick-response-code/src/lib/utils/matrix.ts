@@ -206,24 +206,159 @@ export class Matrix {
         }
     }
 
+    private maskedModule(pattern: number, row: number, column: number): number {
+        let module: number = this.matrix[this.index(row, column)] ^ 
+            (!this.special[this.index(row, column)] && 
+                this.condition(pattern, row, column) ? 1 : 0);
+
+        return module;
+    }
+
     private consecutiveFivePenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        // Compute mask pattern penalty
+        let penalty: number = 0;
+        for (let i = 0; i < this.size; i++) {
+            let count: number = 0;
+            let value: number = -1;
+            for (let j = 0; j < this.size; j++) {
+                let module: number = this.maskedModule(pattern, i, j);
+                if (module != value) {
+                    count = 0;
+                }
+
+                value = module;
+                count++;
+
+                if (count >= 5) {
+                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE :
+                        PENALTY.CONSECUTIVE_FIVE_PLUS);
+                }
+            }
+        }
+
+        for (let j = 0; j < this.size; j++) {
+            let count: number = 0;
+            let value: number = -1;
+            for (let i = 0; i < this.size; i++) {
+                let module: number = this.maskedModule(pattern, i, j);
+                if (module !== value) {
+                    count = 0;
+                }
+
+                value = module;
+                count++;
+
+                if (count >= 5) {
+                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE :
+                        PENALTY.CONSECUTIVE_FIVE_PLUS);
+                }
+            }
+        }
+
+        return penalty;
     }
 
     private sameTwoCrossTwoPenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        let penalty: number = 0;
+        for (let i = 0; i < this.size - 1; i++) {
+            for (let j = 0; j < this.size - 1; j++) {
+                let value: number = -1;
+                let count: number = 0;
+
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 2; c++) {
+                        let module: number = this.maskedModule(pattern, i + r, j + c);
+                        if (module !== value) {
+                            count = 0;
+                        }
+
+                        value = module;
+                        count++;
+                    }
+                }
+
+                if (count == 4) {
+                    penalty += PENALTY.SAME_TWO_CROSS_TWO;
+                }
+            }
+        }
+
+        return penalty;
     }
 
     private finderPatternSimilarityPenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        let penalty: number = 0;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j <= this.size - SIMILARITY_PATTERN.length; j++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    let module: number = this.maskedModule(pattern, i, j + k);
+                    match &&= module === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+
+            for (let j = this.size - 1; j >= SIMILARITY_PATTERN.length - 1; j++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    let module: number = this.maskedModule(pattern, i, j - k);
+                    match &&= module === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+        }
+
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i <= this.size - SIMILARITY_PATTERN.length; i++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    let module: number = this.maskedModule(pattern, i + k, j);
+                    match &&= module === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+
+            for (let i = this.size - 1; i >= SIMILARITY_PATTERN.length - 1; i++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    let module: number = this.maskedModule(pattern, i - k, j);
+                    match &&= module === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+        }
+
+        return penalty;
     }
 
     private unevenRatioPenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        // Compute mask pattern penalty
+        let darks: number = 0;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                let module: number = this.maskedModule(pattern, i, j);
+                if (module === 1) {
+                    darks++;
+                }
+            }
+        }
+
+        let multiplier: number = Math.ceil(darks * 100 / (this.size * this.size * 5));
+        let penalty: number = Math.min(multiplier, 10 - multiplier) * PENALTY.UNEVEN_RATIO;
+
+        return penalty;
     }
 
     public applyMask(): void {
@@ -232,6 +367,7 @@ export class Matrix {
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
             let penalty: number = 0;
+            
             penalty += this.consecutiveFivePenalty(pattern);
             penalty += this.sameTwoCrossTwoPenalty(pattern);
             penalty += this.finderPatternSimilarityPenalty(pattern);
@@ -246,13 +382,8 @@ export class Matrix {
         // Apply mask pattern
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
-                if (this.special[this.index(i, j)]) {
-                    continue
-                }
-
-                if (this.condition(optimalMaskPattern, i, j)) {
-                    this.matrix[this.index(i, j)] ^= 1;
-                }
+                let module: number = this.maskedModule(optimalMaskPattern, i, j);
+                this.matrix[this.index(i, j)] = module;
             }
         }
     }
