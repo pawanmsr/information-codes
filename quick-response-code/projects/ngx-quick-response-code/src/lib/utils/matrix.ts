@@ -162,7 +162,19 @@ class Matrix {
     public addData(data: Uint8Array): void {
         let up: boolean = true;
         let index: number = 0;
-        for (let j = this.size - 1; j >= 0; j-=2) {
+        let j: number = this.size - 1;
+        while (j >= 0) {
+            // Check for timing pattern
+            let skip: boolean = true;
+            for (let i = 0; i < this.size; i++) {
+                skip &&= this.special[this.index(i, j)] > 0;
+            }
+
+            if (skip) {
+                j--;
+                continue;
+            }
+
             let shift: number = 0;
             if (up) {
                 for (let i = this.size - 1; i >= 0; i--) {
