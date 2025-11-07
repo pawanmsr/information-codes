@@ -24,7 +24,8 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "tsConfig": "projects/ngx-quick-response-code/tsconfig.spec.json"
+            "tsConfig": "projects/ngx-quick-response-code/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-quick-response-code/karma.conf.js"
           }
         }
       }
