@@ -5,6 +5,8 @@ const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Exte
 
 const POSITION_MARKER_SIZE: number = 7;
 const ALIGNMENT_PATTERN_SIZE: number = 5;
+const POSITION_MARKER_CENTER: number = 3;
+const ALIGNMENT_PATTERN_CENTER: number = 2;
 
 const NUMERIC_GROUP_SIZE: number = 3;
 const ALPHANUMERIC_GROUP_SIZE: number = 2;
@@ -36,6 +38,16 @@ const VERSION = {
     MAX: 40
 };
 const VERSION_MULTIPLIER: number = 4;
+
+const PENALTY = {
+    CONSECUTIVE_FIVE: 3,
+    CONSECUTIVE_FIVE_PLUS: 1,
+    SAME_TWO_CROSS_TWO: 3,
+    FINDER_PATTERN_SIMILARITY: 40,
+    UNEVEN_RATIO: 10,
+};
+
+const SIMILARITY_PATTERN: number[] = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
 
 const CHARACTER_COUNT = {
     RANGES: [
