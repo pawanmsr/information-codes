@@ -103,17 +103,43 @@ class Matrix {
 
     public addTimingPattern(): void {
         let value: number = 1;
-        for (let k = ALIGNMENT_PATTERN_SIZE + 1; k < this.size - ALIGNMENT_PATTERN_SIZE - 1; k++) {
-            this.set(value, this.index(ALIGNMENT_PATTERN_SIZE - 1, k), true);
-            this.set(value, this.index(k, ALIGNMENT_PATTERN_SIZE - 1), true);
+        for (let k = POSITION_MARKER_SIZE + 1; k < this.size - POSITION_MARKER_SIZE - 1; k++) {
+            this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), true);
+            this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), true);
 
             value = (value + 1) % 2;
         }
     }
 
-    public addFormatInformation(): void {
-        // TODO
-        // Dark module
+    public addFormatInformation(format: Uint8Array): void {
+        let i: number = 0;
+        for (let k = 0; k < POSITION_MARKER_SIZE + 2; k++) {
+            if (this.set(format[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
+                i++;
+            }
+        }
+
+        for (let k = POSITION_MARKER_SIZE; k >= 0; k--) {
+            if (this.set(format[i], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+                i++;
+            }
+        }
+
+        let j: number = 0;
+        for (let k = 0; k < POSITION_MARKER_SIZE + 1; k++) {
+            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - 1 - k), true)) {
+                j++;
+            }
+        }
+
+        for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
+            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+                j++;
+            }
+        }
+
+        // The dark module
+        this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1), true);
     }
 
     public addVersionInformation(): void {
