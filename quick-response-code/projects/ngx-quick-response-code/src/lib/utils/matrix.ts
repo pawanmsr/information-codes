@@ -207,8 +207,43 @@ export class Matrix {
     }
 
     private consecutiveFivePenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        // Compute mask pattern penalty
+        let penalty: number = 0;
+        for (let i = 0; i < this.size; i++) {
+            let count: number = 0;
+            let value: number = -1;
+            for (let j = 0; j < this.size; j++) {
+                if (this.matrix[this.index(i, j)] != value) {
+                    count = 0;
+                }
+
+                value = this.matrix[this.index(i, j)];
+                count++;
+
+                if (count >= 5) {
+                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE : 1);
+                }
+            }
+        }
+
+        for (let j = 0; j < this.size; j++) {
+            let count: number = 0;
+            let value: number = -1;
+            for (let i = 0; i < this.size; i++) {
+                if (this.matrix[this.index(i, j)] != value) {
+                    count = 0;
+                }
+
+                value = this.matrix[this.index(i, j)];
+                count++;
+
+                if (count >= 5) {
+                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE : 1);
+                }
+            }
+        }
+
+        return penalty;
     }
 
     private sameTwoCrossTwoPenalty(pattern: number): number {
