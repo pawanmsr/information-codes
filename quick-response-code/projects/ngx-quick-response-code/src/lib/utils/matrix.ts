@@ -1,6 +1,6 @@
 import { Coordinate } from "./types";
 
-class Matrix {
+export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
@@ -206,22 +206,22 @@ class Matrix {
         }
     }
 
-    private consecutiveFivePenalty(): number {
+    private consecutiveFivePenalty(pattern: number): number {
         // Computer mask pattern penalty
         return 0;
     }
 
-    private sameTwoCrossTwoPenalty(): number {
+    private sameTwoCrossTwoPenalty(pattern: number): number {
         // Computer mask pattern penalty
         return 0;
     }
 
-    private finderPatternSimilarityPenalty(): number {
+    private finderPatternSimilarityPenalty(pattern: number): number {
         // Computer mask pattern penalty
         return 0;
     }
 
-    private unevenRatioPenalty(): number {
+    private unevenRatioPenalty(pattern: number): number {
         // Computer mask pattern penalty
         return 0;
     }
@@ -232,10 +232,10 @@ class Matrix {
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
             let penalty: number = 0;
-            penalty += this.consecutiveFivePenalty();
-            penalty += this.sameTwoCrossTwoPenalty();
-            penalty += this.finderPatternSimilarityPenalty();
-            penalty += this.unevenRatioPenalty();
+            penalty += this.consecutiveFivePenalty(pattern);
+            penalty += this.sameTwoCrossTwoPenalty(pattern);
+            penalty += this.finderPatternSimilarityPenalty(pattern);
+            penalty += this.unevenRatioPenalty(pattern);
 
             if (minimumMaskPenalty === -1 || penalty < minimumMaskPenalty) {
                 minimumMaskPenalty = penalty;
@@ -243,7 +243,18 @@ class Matrix {
             }
         }
 
-        // TODO: Apply optimal mask pattern
+        // Apply mask pattern
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.special[this.index(i, j)]) {
+                    continue
+                }
+
+                if (this.condition(optimalMaskPattern, i, j)) {
+                    this.matrix[this.index(i, j)] ^= 1;
+                }
+            }
+        }
     }
 
     public interleave(blocks: Uint8Array[]): Uint8Array {
