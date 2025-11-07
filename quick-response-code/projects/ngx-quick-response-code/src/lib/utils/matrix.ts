@@ -43,11 +43,44 @@ class Matrix {
         return false;
     }
 
-    public placeAlignmentPatterns(coordinates: Coordinate[]): void {
-        // TODO
+    private index(row: number, column: number): number {
+        return this.size * row + column;
     }
 
-    public placeFinderPatterns(coordinates: Coordinate[]): void {
+    private set(value: number, index: number, special: boolean = false): boolean {
+        if (this.special[index]) {
+            return false;
+        }
+
+        this.matrix[index] = value;
+        
+        if (special) {
+            this.special[index] = 1;
+        }
+
+        return true;
+    }
+
+    public placeFinderPattern(center: Coordinate): void {
+        let value: number = 1;
+        for (let d = 3; d > 0; d--) {
+            for (let i = center.x - d; i <= center.x + d; i++) {
+                this.set(value, this.index(i, center.y - d), true);
+                this.set(value, this.index(i, center.y + d), true);
+            }
+
+            for (let j = center.y - d; j <= center.y + d; j++) {
+                this.set(value, this.index(center.x - d, j), true);
+                this.set(value, this.index(center.x + d, j), true);
+            }
+
+            value = (value + 1) % 2;
+        }
+
+        this.set(1, this.index(center.x, center.y), true);
+    }
+
+    public placeAlignmentPattern(center: Coordinate): void {
         // TODO
     }
 

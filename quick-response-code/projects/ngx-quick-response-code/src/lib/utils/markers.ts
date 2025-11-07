@@ -3,13 +3,13 @@ import { Coordinate } from "./types";
 export class Markers {
     constructor(private version: number) {
         this.topRight = {
-            x: 0,
-            y: this.size(version) - POSITION_MARKER_SIZE
+            x: 3,
+            y: this.size(version) - POSITION_MARKER_SIZE + 3
         }
 
         this.bottomLeft = {
-            x: this.size(version) - POSITION_MARKER_SIZE,
-            y: 0
+            x: this.size(version) - POSITION_MARKER_SIZE + 3,
+            y: 3
         }
 
         if (version > 1) {
@@ -44,8 +44,8 @@ export class Markers {
     public topRight: Coordinate;
     public bottomLeft: Coordinate;
     public topLeft: Coordinate = {
-        x: 0,
-        y: 0
+        x: 3,
+        y: 3
     };
 
     public finderPatterns(): Coordinate[] {
