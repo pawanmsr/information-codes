@@ -230,7 +230,7 @@ export class Matrix {
             let count: number = 0;
             let value: number = -1;
             for (let i = 0; i < this.size; i++) {
-                if (this.matrix[this.index(i, j)] != value) {
+                if (this.matrix[this.index(i, j)] !== value) {
                     count = 0;
                 }
 
@@ -247,8 +247,28 @@ export class Matrix {
     }
 
     private sameTwoCrossTwoPenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        let penalty: number = 0;
+        for (let i = 0; i < this.size - 1; i++) {
+            for (let j = 0; j < this.size - 1; j++) {
+                let value: number = -1;
+                let count: number = 0;
+
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 2; c++) {
+                        if (this.matrix[this.index(i + r, j + c)] !== value) {
+                            count = 0;
+                        }
+
+                        value = this.matrix[this.index(i + r, j + c)];
+                        count++;
+                    }
+                }
+
+                penalty += (count == 4 ? PENALTY.SAME_TWO_CROSS_TWO : 0);
+            }
+        }
+
+        return penalty;
     }
 
     private finderPatternSimilarityPenalty(pattern: number): number {
