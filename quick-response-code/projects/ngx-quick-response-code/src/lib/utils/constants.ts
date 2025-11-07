@@ -41,10 +41,13 @@ const VERSION_MULTIPLIER: number = 4;
 
 const PENALTY = {
     CONSECUTIVE_FIVE: 3,
+    CONSECUTIVE_FIVE_PLUS: 1,
     SAME_TWO_CROSS_TWO: 3,
     FINDER_PATTERN_SIMILARITY: 40,
     UNEVEN_RATIO: 10,
 };
+
+const SIMILARITY_PATTERN: number[] = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
 
 const CHARACTER_COUNT = {
     RANGES: [

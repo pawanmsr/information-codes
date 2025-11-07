@@ -238,7 +238,8 @@ export class Matrix {
                 count++;
 
                 if (count >= 5) {
-                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE : 1);
+                    penalty += (count === 5 ? PENALTY.CONSECUTIVE_FIVE :
+                        PENALTY.CONSECUTIVE_FIVE_PLUS);
                 }
             }
         }
@@ -264,7 +265,9 @@ export class Matrix {
                     }
                 }
 
-                penalty += (count == 4 ? PENALTY.SAME_TWO_CROSS_TWO : 0);
+                if (count == 4) {
+                    penalty += PENALTY.SAME_TWO_CROSS_TWO;
+                }
             }
         }
 
@@ -272,8 +275,57 @@ export class Matrix {
     }
 
     private finderPatternSimilarityPenalty(pattern: number): number {
-        // Computer mask pattern penalty
-        return 0;
+        // Compute mask pattern 
+        let penalty: number = 0;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j <= this.size - SIMILARITY_PATTERN.length; j++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    match &&= this.matrix[this.index(i, j + k)] === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+
+            for (let j = this.size - 1; j >= SIMILARITY_PATTERN.length - 1; j++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    match &&= this.matrix[this.index(i, j - k)] === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+        }
+
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i <= this.size - SIMILARITY_PATTERN.length; i++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    match &&= this.matrix[this.index(i + k, j)] === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+
+            for (let i = this.size - 1; i >= SIMILARITY_PATTERN.length - 1; i++) {
+                let match: boolean = true;
+                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    match &&= this.matrix[this.index(i - k, j)] === SIMILARITY_PATTERN[k];
+                }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
+            }
+        }
+
+        return penalty;
     }
 
     private unevenRatioPenalty(pattern: number): number {
