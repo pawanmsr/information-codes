@@ -102,7 +102,13 @@ class Matrix {
     }
 
     public addTimingPattern(): void {
-        // TODO
+        let value: number = 1;
+        for (let k = ALIGNMENT_PATTERN_SIZE + 1; k < this.size - ALIGNMENT_PATTERN_SIZE - 1; k++) {
+            this.set(value, this.index(ALIGNMENT_PATTERN_SIZE - 1, k), true);
+            this.set(value, this.index(k, ALIGNMENT_PATTERN_SIZE - 1), true);
+
+            value = (value + 1) % 2;
+        }
     }
 
     public addFormatInformation(): void {
