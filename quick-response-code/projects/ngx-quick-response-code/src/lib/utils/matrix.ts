@@ -97,7 +97,7 @@ class Matrix {
                 this.set(value, this.index(center.x + d, j), true);
             }
 
-            value = (value + 1) % 2;
+            value ^= 1;
         }
     }
 
@@ -107,7 +107,7 @@ class Matrix {
             this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), true);
             this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), true);
 
-            value = (value + 1) % 2;
+            value ^= 1;
         }
     }
 
@@ -159,8 +159,37 @@ class Matrix {
         return true;
     }
 
-    private addData(data: Uint8Array): void {
-        // TODO
+    public addData(data: Uint8Array): void {
+        let up: boolean = true;
+        let index: number = 0;
+        for (let j = this.size - 1; j >= 0; j-=2) {
+            let shift: number = 0;
+            if (up) {
+                for (let i = this.size - 1; i >= 0; i--) {
+                    if (index >= data.length) {
+                        break;
+                    }
+
+                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                        index++;
+                    }
+
+                    shift ^= 1;
+                }
+            } else {
+                for (let i = 0; i < this.size; i++) {
+                    if (index >= data.length) {
+                        break;
+                    }
+                    
+                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                        index++;
+                    }
+
+                    shift ^= 1;
+                }
+            }
+        }
     }
 
     public optimalMaskPattern(): number {
