@@ -3,13 +3,13 @@ import { Coordinate } from "./types";
 export class Markers {
     constructor(private version: number) {
         this.topRight = {
-            x: 3,
-            y: this.size(version) - POSITION_MARKER_SIZE + 3
+            x: POSITION_MARKER_CENTER,
+            y: this.size(version) - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER
         }
 
         this.bottomLeft = {
-            x: this.size(version) - POSITION_MARKER_SIZE + 3,
-            y: 3
+            x: this.size(version) - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER,
+            y: POSITION_MARKER_CENTER
         }
 
         if (version > 1) {

@@ -63,7 +63,7 @@ class Matrix {
 
     public placeFinderPattern(center: Coordinate): void {
         let value: number = 1;
-        for (let d = 3; d > 0; d--) {
+        for (let d = POSITION_MARKER_CENTER; d > 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
                 this.set(value, this.index(i, center.y - d), true);
                 this.set(value, this.index(i, center.y + d), true);
@@ -81,7 +81,20 @@ class Matrix {
     }
 
     public placeAlignmentPattern(center: Coordinate): void {
-        // TODO
+        let value: number = 1;
+        for (let d = ALIGNMENT_PATTERN_CENTER; d >= 0; d--) {
+            for (let i = center.x - d; i <= center.x + d; i++) {
+                this.set(value, this.index(i, center.y - d), true);
+                this.set(value, this.index(i, center.y + d), true);
+            }
+
+            for (let j = center.y - d; j <= center.y + d; j++) {
+                this.set(value, this.index(center.x - d, j), true);
+                this.set(value, this.index(center.x + d, j), true);
+            }
+
+            value = (value + 1) % 2;
+        }
     }
 
     public addTimingPattern(): void {
