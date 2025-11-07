@@ -142,8 +142,21 @@ class Matrix {
         this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1), true);
     }
 
-    public addVersionInformation(): void {
-        // TODO
+    public addVersionInformation(version: number): boolean {
+        if (version < 7) {
+            return false;
+        }
+
+        // Encode version information
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 6; j++) {
+                this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 2 - i, j), true);
+                this.set(1, this.index(j, this.size - POSITION_MARKER_SIZE - 2 - i), true);
+            }
+        }
+
+        return true;
     }
 
     private addData(data: Uint8Array): void {
