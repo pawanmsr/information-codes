@@ -1,6 +1,6 @@
 import { Coordinate } from "./types";
 
-class Matrix {
+export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
@@ -97,7 +97,7 @@ class Matrix {
                 this.set(value, this.index(center.x + d, j), true);
             }
 
-            value = (value + 1) % 2;
+            value ^= 1;
         }
     }
 
@@ -107,7 +107,7 @@ class Matrix {
             this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), true);
             this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), true);
 
-            value = (value + 1) % 2;
+            value ^= 1;
         }
     }
 
@@ -159,17 +159,102 @@ class Matrix {
         return true;
     }
 
-    private addData(data: Uint8Array): void {
-        // TODO
+    public addData(data: Uint8Array): void {
+        let up: boolean = true;
+        let index: number = 0;
+        let j: number = this.size - 1;
+        while (j >= 0) {
+            // Check for timing pattern
+            let skip: boolean = true;
+            for (let i = 0; i < this.size; i++) {
+                skip &&= this.special[this.index(i, j)] > 0;
+            }
+
+            if (skip) {
+                j--;
+                continue;
+            }
+
+            let shift: number = 0;
+            if (up) {
+                for (let i = this.size - 1; i >= 0; i--) {
+                    if (index >= data.length) {
+                        break;
+                    }
+
+                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                        index++;
+                    }
+
+                    shift ^= 1;
+                }
+            } else {
+                for (let i = 0; i < this.size; i++) {
+                    if (index >= data.length) {
+                        break;
+                    }
+                    
+                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                        index++;
+                    }
+
+                    shift ^= 1;
+                }
+            }
+
+            up = !up;
+        }
     }
 
-    public optimalMaskPattern(): number {
-        // TODO
+    private consecutiveFivePenalty(pattern: number): number {
+        // Computer mask pattern penalty
         return 0;
     }
 
-    private mask(): void {
-        // TODO
+    private sameTwoCrossTwoPenalty(pattern: number): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    private finderPatternSimilarityPenalty(pattern: number): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    private unevenRatioPenalty(pattern: number): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    public applyMask(): void {
+        // Find optimal mask pattern
+        let minimumMaskPenalty: number = -1;
+        let optimalMaskPattern: number = -1;
+        for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
+            let penalty: number = 0;
+            penalty += this.consecutiveFivePenalty(pattern);
+            penalty += this.sameTwoCrossTwoPenalty(pattern);
+            penalty += this.finderPatternSimilarityPenalty(pattern);
+            penalty += this.unevenRatioPenalty(pattern);
+
+            if (minimumMaskPenalty === -1 || penalty < minimumMaskPenalty) {
+                minimumMaskPenalty = penalty;
+                optimalMaskPattern = pattern
+            }
+        }
+
+        // Apply mask pattern
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.special[this.index(i, j)]) {
+                    continue
+                }
+
+                if (this.condition(optimalMaskPattern, i, j)) {
+                    this.matrix[this.index(i, j)] ^= 1;
+                }
+            }
+        }
     }
 
     public interleave(blocks: Uint8Array[]): Uint8Array {
