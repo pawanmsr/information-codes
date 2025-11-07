@@ -189,16 +189,49 @@ class Matrix {
                     shift ^= 1;
                 }
             }
+
+            up = !up;
         }
     }
 
-    public optimalMaskPattern(): number {
-        // TODO
+    private consecutiveFivePenalty(): number {
+        // Computer mask pattern penalty
         return 0;
     }
 
-    private mask(): void {
-        // TODO
+    private sameTwoCrossTwoPenalty(): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    private finderPatternSimilarityPenalty(): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    private unevenRatioPenalty(): number {
+        // Computer mask pattern penalty
+        return 0;
+    }
+
+    public applyMask(): void {
+        // Find optimal mask pattern
+        let minimumMaskPenalty: number = -1;
+        let optimalMaskPattern: number = -1;
+        for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
+            let penalty: number = 0;
+            penalty += this.consecutiveFivePenalty();
+            penalty += this.sameTwoCrossTwoPenalty();
+            penalty += this.finderPatternSimilarityPenalty();
+            penalty += this.unevenRatioPenalty();
+
+            if (minimumMaskPenalty === -1 || penalty < minimumMaskPenalty) {
+                minimumMaskPenalty = penalty;
+                optimalMaskPattern = pattern
+            }
+        }
+
+        // TODO: Apply optimal mask pattern
     }
 
     public interleave(blocks: Uint8Array[]): Uint8Array {
