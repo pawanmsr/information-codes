@@ -44,11 +44,15 @@ class Matrix {
     }
 
     private index(row: number, column: number): number {
+        if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
+            return -1;
+        }
+
         return this.size * row + column;
     }
 
     private set(value: number, index: number, special: boolean = false): boolean {
-        if (this.special[index]) {
+        if (index < 0 || this.special[index]) {
             return false;
         }
 
@@ -62,8 +66,8 @@ class Matrix {
     }
 
     public placeFinderPattern(center: Coordinate): void {
-        let value: number = 1;
-        for (let d = POSITION_MARKER_CENTER; d > 0; d--) {
+        let value: number = 0;
+        for (let d = POSITION_MARKER_CENTER + 1; d > 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
                 this.set(value, this.index(i, center.y - d), true);
                 this.set(value, this.index(i, center.y + d), true);
