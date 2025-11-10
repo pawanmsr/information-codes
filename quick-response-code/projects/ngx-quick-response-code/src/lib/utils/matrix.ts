@@ -405,15 +405,30 @@ export class Matrix {
             for (const block of blocks) {
                 if (j >= block.length) continue;
                 
-                for (let k = 0; k < BITS_IN_BYTE; k++) {
-                    interleaved[i] = block[j + k];
-                    i++;
-                }
+                interleaved.set(block.slice(j, j + BITS_IN_BYTE), i);
+                i += BITS_IN_BYTE;
             }
 
             j += BITS_IN_BYTE;
         }
 
         return interleaved;
+    }
+
+    public merge(blocks: Uint8Array[]): Uint8Array {
+        let length: number = 0;
+        blocks.forEach(block => {
+            length += block.length;
+        });
+
+        let merged: Uint8Array = new Uint8Array(length);
+
+        let i: number = 0;
+        for (const block of blocks) {
+            merged.set(block, i);
+            i += block.length;
+        }
+
+        return merged;
     }
 }
