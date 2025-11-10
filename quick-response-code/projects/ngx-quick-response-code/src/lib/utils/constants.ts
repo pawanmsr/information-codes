@@ -30,6 +30,8 @@ const FORMAT_MASK: number = 21522; // 0b101010000010010
 
 const VERSION_DATA_LENGTH: number = 6;
 const VERSION_ERROR_LENGTH: number = 12
+const FORMAT_DATA_LENGTH: number = 5;
+const FORMAT_ERROR_LENGTH: number = 10;
 
 const ENCODING = {
     NUMERIC: 0,

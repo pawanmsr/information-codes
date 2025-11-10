@@ -5,14 +5,16 @@ import { Specification } from './types';
 
 export class Analyzer {
     private specification: Specification;
-    
+
     private data: Uint8Array;
+    private formatData: Uint8Array;
     private versionData: Uint8Array;
 
     constructor(private text: string) {
         this.specification = this.optimalSpecification();
 
         this.versionData = new Uint8Array(VERSION_DATA_LENGTH);
+        this.formatData = new Uint8Array(FORMAT_DATA_LENGTH);
 
         let count: number = totalDataCodewords(this.specification.version,
             this.specification.level);
@@ -88,6 +90,37 @@ export class Analyzer {
         return this.versionData;
     }
 
+    public setMaskPattern(pattern: number): boolean {
+        let decimal: number;
+        this.specification.pattern = pattern;
+
+        decimal = this.specification.level;
+        for (let i: number = 1; i >= 0; i--) {
+            this.formatData[i] = decimal & 1;
+            decimal >>= 1;
+        }
+
+        if (decimal !== 0) {
+            return false;
+        }
+
+        decimal = this.specification.pattern;
+        for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
+            this.formatData[i] = decimal & 1;
+            decimal >>= 1;
+        }
+
+        if (decimal !== 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public getFormatData(): Uint8Array {
+        return this.formatData;
+    }
+
     public setMinimumVersionAndLevel(version: number, level: number): Specification {
         this.specification = this.optimalSpecification(version, level);
         return this.specification;
@@ -110,7 +143,8 @@ export class Analyzer {
                 return {
                     encoding: encoding,
                     version: version,
-                    level: level
+                    level: level,
+                    pattern: -1
                 };
             }
 
@@ -120,7 +154,8 @@ export class Analyzer {
         return {
             encoding: encoding,
             version: 0,
-            level: -1
+            level: -1,
+            pattern: -1
         };
     }
 

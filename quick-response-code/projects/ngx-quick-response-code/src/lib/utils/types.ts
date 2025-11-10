@@ -7,4 +7,5 @@ export type Specification = {
     encoding: number;
     version: number;
     level: number;
+    pattern: number;
 };
