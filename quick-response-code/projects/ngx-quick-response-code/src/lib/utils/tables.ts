@@ -1,4 +1,3 @@
-import { Version } from '@angular/core';
 import * as alphanumericTable from './alphanumeric.json';
 import * as kanjiTable from './sjis.json';
 

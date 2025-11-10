@@ -23,9 +23,10 @@ const ERROR_CORRECTION_LEVEL = {
 };
 
 const FIELD_SIZE: number = 256;
-const FIELD_MODULO: number = 0b100011101;
-const BIT_POLYNOMIAL: number = 1335;
-const FORMAT_MASK: number = 21522;
+const FIELD_MODULO: number = 285 // 0b100011101;
+
+const FORMAT_GOLAY: number = 1335; // 0b10100110111
+const FORMAT_MASK: number = 21522; // 0b101010000010010
 
 const ENCODING = {
     NUMERIC: 0,

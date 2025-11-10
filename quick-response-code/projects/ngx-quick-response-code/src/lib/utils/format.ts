@@ -5,12 +5,13 @@ export class Format {
         this.data = new Uint8Array(POSITION_MARKER_SIZE * 2 + 1);
     }
 
+    // Bit Error Correction //
     public encode(): Uint8Array {
         let decimal, index: number;
         let divisor: Uint8Array = new Uint8Array(BITS_IN_BYTE * 2);
         let dividend: Uint8Array = new Uint8Array(BITS_IN_BYTE * 2);
 
-        decimal = BIT_POLYNOMIAL;
+        decimal = FORMAT_GOLAY;
         for (let i: number = 10; i >= 0; i--) {
             divisor[i] = decimal & 1;
             decimal >>= 1;
@@ -63,6 +64,4 @@ export class Format {
 
         return this.data;
     }
-
-    // Bit Error Correction //
 }
