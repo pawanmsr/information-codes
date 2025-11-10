@@ -470,7 +470,6 @@ export class Matrix {
         while (i < length) {
             for (const block of blocks) {
                 if (j >= block.length) continue;
-
                 interleaved.set(block.slice(j, j + BITS_IN_BYTE), i);
                 i += BITS_IN_BYTE;
             }
