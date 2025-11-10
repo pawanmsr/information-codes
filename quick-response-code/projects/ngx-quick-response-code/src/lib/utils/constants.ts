@@ -25,13 +25,14 @@ const ERROR_CORRECTION_LEVEL = {
 const FIELD_SIZE: number = 256;
 const FIELD_MODULO: number = 285 // 0b100011101;
 
+const FORMAT_DATA_LENGTH: number = 5;
+const FORMAT_ERROR_LENGTH: number = 10;
 const FORMAT_GOLAY: number = 1335; // 0b10100110111
 const FORMAT_MASK: number = 21522; // 0b101010000010010
 
 const VERSION_DATA_LENGTH: number = 6;
 const VERSION_ERROR_LENGTH: number = 12
-const FORMAT_DATA_LENGTH: number = 5;
-const FORMAT_ERROR_LENGTH: number = 10;
+const VERSION_GOLAY: number = 7973; // 0b1111100100101
 
 const ENCODING = {
     NUMERIC: 0,

@@ -141,4 +141,33 @@ export class ErrorCorrection {
 
         return blocks;
     }
+
+    public versionError(data: Uint8Array): Uint8Array {
+        let decimal, index: number;
+        let dividend: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
+        let divisor: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH + 1);
+        for (let i = 0; i < VERSION_DATA_LENGTH; i++) {
+            dividend[i] = data[i];
+        }
+
+        decimal = VERSION_GOLAY;
+        for (let i: number = VERSION_ERROR_LENGTH; i >= 0; i--) {
+            divisor[i] = decimal & 1;
+            decimal >>= 1;
+        }
+
+        index = 0;
+        while (index < VERSION_DATA_LENGTH) {
+            while (index < VERSION_DATA_LENGTH && dividend[index] === 0) {
+                index++;
+            }
+
+            for (let i: number = 0; index < VERSION_DATA_LENGTH; i++) {
+                dividend[index] = dividend[index] ^ divisor[i];
+                index++;
+            }
+        }
+
+        return dividend.slice(VERSION_DATA_LENGTH, VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
+    }
 }
