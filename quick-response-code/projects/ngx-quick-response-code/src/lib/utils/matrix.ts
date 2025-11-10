@@ -111,29 +111,29 @@ export class Matrix {
         }
     }
 
-    public addFormatInformation(format: Uint8Array): void {
+    public addFormatInformation(data: Uint8Array): void {
         let i: number = 0;
         for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
-            if (this.set(format[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
+            if (this.set(data[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
                 i++;
             }
         }
 
         for (let k = POSITION_MARKER_SIZE; k >= 0; k--) {
-            if (this.set(format[i], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+            if (this.set(data[i], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
                 i++;
             }
         }
 
         let j: number = 0;
         for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
-            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+            if (this.set(data[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
                 j++;
             }
         }
 
         for (let k = POSITION_MARKER_SIZE + 1; k > 0; k--) {
-            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - k), true)) {
+            if (this.set(data[j], this.index(POSITION_MARKER_SIZE + 1, this.size - k), true)) {
                 j++;
             }
         }
@@ -142,21 +142,22 @@ export class Matrix {
         this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1), true);
     }
 
-    public addVersionInformation(version: number): boolean {
+    public addVersionInformation(version: number, data: Uint8Array): boolean {
         if (version < 7) {
             return false;
         }
 
-        // Encode version information
-
+        let index: number = 0;
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 6; j++) {
-                this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 2 - i, j), true);
-                this.set(1, this.index(j, this.size - POSITION_MARKER_SIZE - 2 - i), true);
+                this.set(data[index], this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j), true);
+                this.set(data[index], this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)), true);
+
+                index++;
             }
         }
 
-        return true;
+        return index === data.length;
     }
 
     public addData(data: Uint8Array): void {
