@@ -147,7 +147,7 @@ export class Matrix {
             return false;
         }
 
-        let index: number = 0;
+        let index: number = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 6; j++) {
                 this.set(data[index], this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j), true);
@@ -157,7 +157,7 @@ export class Matrix {
             }
         }
 
-        return index === data.length;
+        return index === -1;
     }
 
     public addData(data: Uint8Array): void {
