@@ -142,13 +142,40 @@ export class ErrorCorrection {
         return blocks;
     }
 
+    public formatError(data: Uint8Array): Uint8Array {
+        let decimal, index: number;
+        let dividend: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
+        let divisor: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH + 1);
+
+        dividend.set(data, 0);
+
+        decimal = FORMAT_GOLAY;
+        for (let i: number = FORMAT_ERROR_LENGTH; i >= 0; i--) {
+            divisor[i] = decimal & 1;
+            decimal >>= 1;
+        }
+
+        index = 0;
+        while (index < FORMAT_DATA_LENGTH) {
+            while (index < FORMAT_DATA_LENGTH && dividend[index] === 0) {
+                index++;
+            }
+
+            for (let i: number = 0; index < FORMAT_DATA_LENGTH; i++) {
+                dividend[index] = dividend[index] ^ divisor[i];
+                index++;
+            }
+        }
+
+        return dividend.slice(FORMAT_DATA_LENGTH, FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
+    }
+
     public versionError(data: Uint8Array): Uint8Array {
         let decimal, index: number;
         let dividend: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
         let divisor: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH + 1);
-        for (let i = 0; i < VERSION_DATA_LENGTH; i++) {
-            dividend[i] = data[i];
-        }
+        
+        dividend.set(data, 0);
 
         decimal = VERSION_GOLAY;
         for (let i: number = VERSION_ERROR_LENGTH; i >= 0; i--) {
