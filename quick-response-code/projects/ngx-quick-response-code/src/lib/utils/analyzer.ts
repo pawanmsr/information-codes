@@ -5,10 +5,14 @@ import { Specification } from './types';
 
 export class Analyzer {
     private specification: Specification;
+    
     private data: Uint8Array;
+    private versionData: Uint8Array;
 
     constructor(private text: string) {
         this.specification = this.optimalSpecification();
+
+        this.versionData = new Uint8Array(VERSION_DATA_LENGTH);
 
         let count: number = totalDataCodewords(this.specification.version,
             this.specification.level);
@@ -78,6 +82,10 @@ export class Analyzer {
 
     public getVersion(): number {
         return this.specification.version;
+    }
+
+    public getVersionData(): Uint8Array {
+        return this.versionData;
     }
 
     public setMinimumVersionAndLevel(version: number, level: number): Specification {

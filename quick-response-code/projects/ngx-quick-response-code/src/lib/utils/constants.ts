@@ -28,6 +28,9 @@ const FIELD_MODULO: number = 285 // 0b100011101;
 const FORMAT_GOLAY: number = 1335; // 0b10100110111
 const FORMAT_MASK: number = 21522; // 0b101010000010010
 
+const VERSION_DATA_LENGTH: number = 6;
+const VERSION_ERROR_LENGTH: number = 12
+
 const ENCODING = {
     NUMERIC: 0,
     ALPHANUMERIC: 1,
