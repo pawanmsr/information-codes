@@ -1,5 +1,5 @@
 import { KanjiEncoder } from './kanji';
-import { ALPHANUMERIC_TABLE } from './tables'
+import { ALPHANUMERIC_TABLE } from './tables';
 import { characterCountLength, tableIndex, totalDataCodewords } from './tables';
 import { Specification } from './types';
 

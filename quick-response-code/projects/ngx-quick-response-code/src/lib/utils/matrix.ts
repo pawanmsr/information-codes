@@ -24,7 +24,7 @@ export class Matrix {
                 return (row + column) % 3 === 0;
                 break;
             case 4:
-                return (row / 2 + column / 3) % 2 === 0;
+                return (Math.floor(row / 2) + Math.floor(column / 3)) % 2 === 0;
                 break;
             case 5:
                 return (row + column) % 2 + (row * column) % 3 === 0;
@@ -113,7 +113,7 @@ export class Matrix {
 
     public addFormatInformation(format: Uint8Array): void {
         let i: number = 0;
-        for (let k = 0; k < POSITION_MARKER_SIZE + 2; k++) {
+        for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
             if (this.set(format[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
                 i++;
             }
@@ -126,14 +126,14 @@ export class Matrix {
         }
 
         let j: number = 0;
-        for (let k = 0; k < POSITION_MARKER_SIZE + 1; k++) {
-            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - 1 - k), true)) {
+        for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
+            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
                 j++;
             }
         }
 
-        for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
-            if (this.set(format[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+        for (let k = POSITION_MARKER_SIZE + 1; k > 0; k--) {
+            if (this.set(format[j], this.index(POSITION_MARKER_SIZE + 1, this.size - k), true)) {
                 j++;
             }
         }
@@ -361,7 +361,7 @@ export class Matrix {
         return penalty;
     }
 
-    public applyMask(): void {
+    public applyMask(): number {
         // Find optimal mask pattern
         let minimumMaskPenalty: number = -1;
         let optimalMaskPattern: number = -1;
@@ -386,6 +386,8 @@ export class Matrix {
                 this.matrix[this.index(i, j)] = module;
             }
         }
+
+        return optimalMaskPattern;
     }
 
     public interleave(blocks: Uint8Array[]): Uint8Array {

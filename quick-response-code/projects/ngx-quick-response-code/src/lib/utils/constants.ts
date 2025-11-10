@@ -16,14 +16,17 @@ const BITS_IN_BYTE: number = 8;
 const BITS_IN_KANJI: number = 13;
 
 const ERROR_CORRECTION_LEVEL = {
-    LOW: 0,
-    MEDIUM: 1,
-    QUARTILE: 2,
-    HIGH: 3
+    LOW: 1,
+    MEDIUM: 0,
+    QUARTILE: 3,
+    HIGH: 2
 };
 
 const FIELD_SIZE: number = 256;
-const FIELD_MODULO: number = 0b100011101;
+const FIELD_MODULO: number = 285 // 0b100011101;
+
+const FORMAT_GOLAY: number = 1335; // 0b10100110111
+const FORMAT_MASK: number = 21522; // 0b101010000010010
 
 const ENCODING = {
     NUMERIC: 0,
