@@ -1,4 +1,5 @@
 export class Bitmap {
-
-    constructor() {}
+    constructor(private quiet: number) {
+        this.quiet = Math.max(this.quiet, QUIET_ZONE_SIZE);
+    }
 }

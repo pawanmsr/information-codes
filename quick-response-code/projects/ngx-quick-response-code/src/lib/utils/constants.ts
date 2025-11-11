@@ -34,6 +34,8 @@ const VERSION_DATA_LENGTH: number = 6;
 const VERSION_ERROR_LENGTH: number = 12
 const VERSION_GOLAY: number = 7973; // 0b1111100100101
 
+const QUIET_ZONE_SIZE: number = 4;
+
 const ENCODING = {
     NUMERIC: 0,
     ALPHANUMERIC: 1,
