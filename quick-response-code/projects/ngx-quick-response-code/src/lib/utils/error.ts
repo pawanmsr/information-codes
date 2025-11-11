@@ -1,3 +1,5 @@
+import { BITS_IN_BYTE, FIELD_MODULO, FIELD_SIZE, FORMAT_DATA_LENGTH, FORMAT_ERROR_LENGTH } from "./constants";
+import { FORMAT_GOLAY, VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH, VERSION_GOLAY } from "./constants";
 import { blockCount, errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {

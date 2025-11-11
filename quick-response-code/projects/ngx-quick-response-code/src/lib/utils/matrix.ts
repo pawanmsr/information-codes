@@ -1,4 +1,7 @@
 import { Coordinate } from "./types";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, PENALTY } from "./constants";
+import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
+import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
 export class Matrix {
     private matrix: Uint8Array;
@@ -41,6 +44,10 @@ export class Matrix {
         }
 
         return false;
+    }
+
+    public get(row: number, column: number): number {
+        return this.matrix[this.index(row, column)];
     }
 
     private index(row: number, column: number): number {

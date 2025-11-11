@@ -1,42 +1,42 @@
-const NUMERIC_REGULAR_EXPRESSION = /^\d*$/;
-const ALPHANUMERIC_REGULAR_EXPRESSION = /^[\dA-Z $%*+-./:]*$/;
-const BYTE_REGULAR_EXPRESSION = /^[\x00-\xff]*$/;
-const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}]*$/u;
+export const NUMERIC_REGULAR_EXPRESSION = /^\d*$/;
+export const ALPHANUMERIC_REGULAR_EXPRESSION = /^[\dA-Z $%*+-./:]*$/;
+export const BYTE_REGULAR_EXPRESSION = /^[\x00-\xff]*$/;
+export const KANJI_KANA_REGULAR_EXPRESSION = /^[\p{Script_Extensions=Han}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}]*$/u;
 
-const POSITION_MARKER_SIZE: number = 7;
-const ALIGNMENT_PATTERN_SIZE: number = 5;
-const POSITION_MARKER_CENTER: number = 3;
-const ALIGNMENT_PATTERN_CENTER: number = 2;
+export const POSITION_MARKER_SIZE: number = 7;
+export const ALIGNMENT_PATTERN_SIZE: number = 5;
+export const POSITION_MARKER_CENTER: number = 3;
+export const ALIGNMENT_PATTERN_CENTER: number = 2;
 
-const NUMERIC_GROUP_SIZE: number = 3;
-const ALPHANUMERIC_GROUP_SIZE: number = 2;
-const ALPHANUMERIC_MULTIPLIER: number = 45;
+export const NUMERIC_GROUP_SIZE: number = 3;
+export const ALPHANUMERIC_GROUP_SIZE: number = 2;
+export const ALPHANUMERIC_MULTIPLIER: number = 45;
 
-const BITS_IN_BYTE: number = 8;
-const BITS_IN_KANJI: number = 13;
+export const BITS_IN_BYTE: number = 8;
+export const BITS_IN_KANJI: number = 13;
 
-const ERROR_CORRECTION_LEVEL = {
+export const ERROR_CORRECTION_LEVEL = {
     LOW: 1,
     MEDIUM: 0,
     QUARTILE: 3,
     HIGH: 2
 };
 
-const FIELD_SIZE: number = 256;
-const FIELD_MODULO: number = 285; // 0b100011101
+export const FIELD_SIZE: number = 256;
+export const FIELD_MODULO: number = 285; // 0b100011101
 
-const FORMAT_DATA_LENGTH: number = 5;
-const FORMAT_ERROR_LENGTH: number = 10;
-const FORMAT_GOLAY: number = 1335; // 0b10100110111
-const FORMAT_MASK: number = 21522; // 0b101010000010010
+export const FORMAT_DATA_LENGTH: number = 5;
+export const FORMAT_ERROR_LENGTH: number = 10;
+export const FORMAT_GOLAY: number = 1335; // 0b10100110111
+export const FORMAT_MASK: number = 21522; // 0b101010000010010
 
-const VERSION_DATA_LENGTH: number = 6;
-const VERSION_ERROR_LENGTH: number = 12;
-const VERSION_GOLAY: number = 7973; // 0b1111100100101
+export const VERSION_DATA_LENGTH: number = 6;
+export const VERSION_ERROR_LENGTH: number = 12;
+export const VERSION_GOLAY: number = 7973; // 0b1111100100101
 
-const QUIET_ZONE_SIZE: number = 4;
+export const QUIET_ZONE_SIZE: number = 4;
 
-const ENCODING = {
+export const ENCODING = {
     NUMERIC: 0,
     ALPHANUMERIC: 1,
     BYTE: 2,
@@ -44,13 +44,13 @@ const ENCODING = {
     ECI: 7
 };
 
-const VERSION = {
+export const VERSION = {
     MIN: 1,
     MAX: 40
 };
-const VERSION_MULTIPLIER: number = 4;
+export const VERSION_MULTIPLIER: number = 4;
 
-const PENALTY = {
+export const PENALTY = {
     CONSECUTIVE_FIVE: 3,
     CONSECUTIVE_FIVE_PLUS: 1,
     SAME_TWO_CROSS_TWO: 3,
@@ -58,9 +58,9 @@ const PENALTY = {
     UNEVEN_RATIO: 10,
 };
 
-const SIMILARITY_PATTERN: number[] = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
+export const SIMILARITY_PATTERN: number[] = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
 
-const CHARACTER_COUNT = {
+export const CHARACTER_COUNT = {
     RANGES: [
         {
             MIN: 1,
@@ -86,7 +86,7 @@ const CHARACTER_COUNT = {
 
 // Reference: ? Pending
 // TODO: present calculations
-const CHARACTER_CAPACITY = [
+export const CHARACTER_CAPACITY = [
     // Numeric, Alphanumeric, Byte, Kanji-Kana
     // Version 1
     41, 25, 17, 10, // L
@@ -329,7 +329,7 @@ const CHARACTER_CAPACITY = [
     3057,   1852,   1273,   784,    // H
 ];
 
-const MIXED_DATA_BITS = [
+export const MIXED_DATA_BITS = [
     // L,   M,      Q,      H //
     152,    128,    104,    72,     // Version 1
     272,    224,    176,    128,    // Version 2
@@ -373,7 +373,7 @@ const MIXED_DATA_BITS = [
     23648,  18672,  13328,  10208,  // Version 40
 ];
 
-const BLOCK_COUNT = {
+export const BLOCK_COUNT = {
     GROUP_ONE: [
         // L,   M,  Q,  H //
         1,  1,  1,  1,  // Version 1
@@ -463,7 +463,7 @@ const BLOCK_COUNT = {
     ]
 };
 
-const CODEWORD_COUNT = {
+export const CODEWORD_COUNT = {
     GROUP_ONE: [
         // L,   M,  Q,  H //
         19, 16, 13, 9,  // Version 1
@@ -553,7 +553,7 @@ const CODEWORD_COUNT = {
     ]
 };
 
-const ERROR_CORRECTION_CODEWORDS_PER_BLOCK = [
+export const ERROR_CORRECTION_CODEWORDS_PER_BLOCK = [
     // L,   M,  Q,  H //
     7,  10, 13, 17, // Version 1
     10, 16, 22, 28, // Version 2

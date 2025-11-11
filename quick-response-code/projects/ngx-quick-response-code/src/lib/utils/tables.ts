@@ -1,4 +1,5 @@
 import * as alphanumericTable from './alphanumeric.json';
+import { BLOCK_COUNT, CHARACTER_COUNT, CODEWORD_COUNT, ERROR_CORRECTION_CODEWORDS_PER_BLOCK, VERSION_MULTIPLIER } from './constants';
 import * as kanjiTable from './sjis.json';
 
 interface Dictionary {
@@ -46,11 +47,11 @@ export function characterCountLength(version: number, encoding: number): number 
 }
 
 export function errorCorrectionCodewordsPerBlock(version: number, level: number): number {
-        let index: number = tableIndex(version, level);
-        let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index];
-        
-        return count;
-    }
+    let index: number = tableIndex(version, level);
+    let count: number = ERROR_CORRECTION_CODEWORDS_PER_BLOCK[index];
+    
+    return count;
+}
 
 export function totalErrorCorrectionCodewords(version: number, level: number): number {
     let index: number = tableIndex(version, level);

@@ -1,3 +1,7 @@
+import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION, BLOCK_COUNT, CODEWORD_COUNT } from './constants';
+import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACITY } from './constants';
+import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
+import { NUMERIC_GROUP_SIZE, NUMERIC_REGULAR_EXPRESSION, VERSION, VERSION_DATA_LENGTH, VERSION_MULTIPLIER } from './constants';
 import { KanjiEncoder } from './kanji';
 import { ALPHANUMERIC_TABLE } from './tables';
 import { characterCountLength, tableIndex, totalDataCodewords } from './tables';
@@ -88,6 +92,10 @@ export class Analyzer {
 
     public getVersionData(): Uint8Array {
         return this.versionData;
+    }
+
+    public getLevel(): number {
+        return this.specification.level;
     }
 
     public setMaskPattern(pattern: number): boolean {

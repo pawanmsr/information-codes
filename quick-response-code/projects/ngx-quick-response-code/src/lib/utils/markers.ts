@@ -1,14 +1,15 @@
+import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, VERSION_MULTIPLIER } from "./constants";
 import { Coordinate } from "./types";
 
 export class Markers {
     constructor(private version: number) {
         this.topRight = {
             x: POSITION_MARKER_CENTER,
-            y: this.size(version) - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER
+            y: this.size() - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER
         }
 
         this.bottomLeft = {
-            x: this.size(version) - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER,
+            x: this.size() - POSITION_MARKER_SIZE + POSITION_MARKER_CENTER,
             y: POSITION_MARKER_CENTER
         }
 
@@ -17,16 +18,16 @@ export class Markers {
         }
     }
 
-    private size(version: number): number {
-        return version * VERSION_MULTIPLIER + 17;
+    public size(): number {
+        return this.version * VERSION_MULTIPLIER + 17;
     }
 
-    private distance(version: number): number {
-        return this.size(version) - 6 - 7;
+    private distance(): number {
+        return this.size() - 6 - 7;
     }
 
     private generate(): void {
-        let distance = this.distance(this.version);
+        let distance = this.distance();
         let intervals = Math.floor(this.version / 7 + 1);
         let step = Math.round(distance / intervals);
 
