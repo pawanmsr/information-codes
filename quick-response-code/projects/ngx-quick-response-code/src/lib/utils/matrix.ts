@@ -50,6 +50,10 @@ export class Matrix {
         return false;
     }
 
+    public get(row: number, column: number): number {
+        return this.matrix[this.index(row, column)];
+    }
+
     private index(row: number, column: number): number {
         if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
             return -1;
