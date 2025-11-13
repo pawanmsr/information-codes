@@ -1,5 +1,5 @@
-import { Coordinate } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY } from "./constants";
+import { Color, Coordinate } from "./types";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -7,7 +7,9 @@ export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
-    constructor(private size: number) {
+    constructor(private size: number, private quiet: number) {
+        this.quiet = Math.max(this.quiet, QUIET_ZONE_SIZE);
+
         this.matrix = new Uint8Array(size * size);
         this.special = new Uint8Array(size * size);
     }
@@ -46,24 +48,8 @@ export class Matrix {
         return false;
     }
 
-    private validRowAndColumn(row: number, column: number): boolean {
-        if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public get(row: number, column: number): number {
-        if (!this.validRowAndColumn(row, column)) {
-            return 0;
-        }
-
-        return this.matrix[this.index(row, column)];
-    }
-
     private index(row: number, column: number): number {
-        if (!this.validRowAndColumn(row, column)) {
+        if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
             return -1;
         }
 
@@ -86,6 +72,18 @@ export class Matrix {
         }
 
         return true;
+    }
+
+    private get(index: number): number {
+        if (index < 0 || index >= this.matrix.length) {
+            return 0;
+        }
+
+        return this.matrix[index];
+    }
+
+    public imageSize(): number {
+        return this.size + this.quiet * 2;
     }
 
     public placeFinderPattern(center: Coordinate): void {
@@ -474,4 +472,29 @@ export class Matrix {
 
         return merged;
     }
+
+    public generateRGBAMap(light: Color, dark: Color): Uint8Array {
+        const size: number = this.imageSize();
+        let map: Uint8Array = new Uint8Array(size * size * 4);
+        for (let i: number = 0; i < size; i++) {
+            for (let j: number = 0; j < size; j++) {
+                let values: Uint8Array = colorValues(
+                    (this.get(this.index(i - this.quiet, j - this.quiet)) === 1 ? 
+                        dark : light));
+                
+                let k: number = (i * size + j) * 4;
+                for (const value of values) {
+                    map[k++] = value;
+                }
+            }
+        }
+
+        return map;
+    }
+}
+
+export function colorValues(color: Color): Uint8Array {
+    return new Uint8Array(
+        [color.red, color.green, color.blue, color.alpha]
+    );
 }
