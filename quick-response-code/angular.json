@@ -27,8 +27,23 @@
             "tsConfig": "projects/ngx-quick-response-code/tsconfig.spec.json",
             "karmaConfig": "projects/ngx-quick-response-code/karma.conf.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngx-quick-response-code/**/*.ts",
+              "projects/ngx-quick-response-code/**/*.html"
+            ],
+            "eslintConfig": "projects/ngx-quick-response-code/eslint.config.js"
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }
