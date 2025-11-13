@@ -29,6 +29,7 @@ export const FORMAT_DATA_LENGTH: number = 5;
 export const FORMAT_ERROR_LENGTH: number = 10;
 export const FORMAT_GOLAY: number = 1335; // 0b10100110111
 export const FORMAT_MASK: number = 21522; // 0b101010000010010
+export const FORMAT_COMMENCE: number = 7;
 
 export const VERSION_DATA_LENGTH: number = 6;
 export const VERSION_ERROR_LENGTH: number = 12;

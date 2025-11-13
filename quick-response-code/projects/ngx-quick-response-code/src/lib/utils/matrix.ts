@@ -1,5 +1,5 @@
 import { Coordinate } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, PENALTY } from "./constants";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -46,12 +46,24 @@ export class Matrix {
         return false;
     }
 
+    private validRowAndColumn(row: number, column: number): boolean {
+        if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
+            return false;
+        }
+
+        return true;
+    }
+
     public get(row: number, column: number): number {
+        if (!this.validRowAndColumn(row, column)) {
+            return 0;
+        }
+
         return this.matrix[this.index(row, column)];
     }
 
     private index(row: number, column: number): number {
-        if (row < 0 || row >= this.size || column < 0 || column >= this.size) {
+        if (!this.validRowAndColumn(row, column)) {
             return -1;
         }
 
@@ -59,11 +71,15 @@ export class Matrix {
     }
 
     private set(value: number, index: number, special: boolean = false): boolean {
-        if (index < 0 || this.special[index]) {
+        if (index < 0) {
             return false;
         }
 
-        this.matrix[index] = value;
+        if (this.special[index] === 1 && !special) {
+            return false;
+        }
+
+        this.matrix[index] = Math.max(Math.min(Math.round(value), 1), 0);
         
         if (special) {
             this.special[index] = 1;
@@ -150,7 +166,7 @@ export class Matrix {
     }
 
     public addVersionInformation(version: number, data: Uint8Array): boolean {
-        if (version < 7) {
+        if (version < FORMAT_COMMENCE) {
             return false;
         }
 
