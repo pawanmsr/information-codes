@@ -1,3 +1,5 @@
+import { BITS_IN_BYTE, FIELD_MODULO, FIELD_SIZE, FORMAT_DATA_LENGTH, FORMAT_ERROR_LENGTH } from "./constants";
+import { FORMAT_GOLAY, VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH, VERSION_GOLAY } from "./constants";
 import { blockCount, errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {
@@ -134,8 +136,8 @@ export class ErrorCorrection {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
         for (let i = 0; i < blockCount(this.version, this.level); i++) {
-            blocks.push(this.data.slice(index,
-                index + errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE - 1));
+            blocks.push(this.data.slice(index, index + 
+                errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE));
             index += errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE;
         }
 

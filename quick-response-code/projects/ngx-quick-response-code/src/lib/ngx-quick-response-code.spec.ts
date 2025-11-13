@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { QuickResponseCode } from './ngx-quick-response-code';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('NgxQuickResponseCode', () => {
   let component: QuickResponseCode;
@@ -8,7 +9,8 @@ describe('NgxQuickResponseCode', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [QuickResponseCode]
+      imports: [QuickResponseCode],
+      providers: [provideZonelessChangeDetection()]
     })
     .compileComponents();
 
