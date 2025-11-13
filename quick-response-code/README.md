@@ -90,3 +90,8 @@ Once the server is running, open your browser and navigate to `http://localhost:
 ### Projects
 
 - [Ngx-Quick-Response-Code](projects/ngx-quick-response-code/README.md): Display for Angular Applications.
+
+### Arigato
+
+- Development and Popularization of QR Code. 2019. Hara, Masahiro. Denso Wave.
+- [QR Code](https://www.qrcode.com/)
