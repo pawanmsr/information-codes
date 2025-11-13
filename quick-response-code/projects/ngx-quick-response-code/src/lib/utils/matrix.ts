@@ -171,7 +171,7 @@ export class Matrix {
         let up: boolean = true;
         let index: number = 0;
         let j: number = this.size - 1;
-        while (j >= 0) {
+        while (j > 0) {
             // Check for timing pattern
             let skip: boolean = true;
             for (let i = 0; i < this.size; i++) {
@@ -190,7 +190,7 @@ export class Matrix {
                         break;
                     }
 
-                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                    if (this.set(data[index], this.index(i, j + shift), false)) {
                         index++;
                     }
 
@@ -202,7 +202,7 @@ export class Matrix {
                         break;
                     }
                     
-                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                    if (this.set(data[index], this.index(i, j + shift), false)) {
                         index++;
                     }
 
@@ -211,6 +211,7 @@ export class Matrix {
             }
 
             up = !up;
+            j -= 2;
         }
     }
 
@@ -297,9 +298,16 @@ export class Matrix {
     private finderPatternSimilarityPenalty(pattern: number): number {
         let penalty: number = 0;
         for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j <= this.size - SIMILARITY_PATTERN.length; j++) {
-                let match: boolean = true;
+            for (let j = 0; j < this.size; j++) {
+                let match: boolean;
+                
+                match = true;
                 for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    if (j + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
                     let module: number = this.maskedModule(pattern, i, j + k);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
@@ -307,25 +315,32 @@ export class Matrix {
                 if (match) {
                     penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
-            }
 
-            for (let j = this.size - 1; j >= SIMILARITY_PATTERN.length - 1; j++) {
-                let match: boolean = true;
-                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
-                    let module: number = this.maskedModule(pattern, i, j - k);
+                match = true;
+                for (let k = SIMILARITY_PATTERN.length - 1; k >= 0; k--) {
+                    if (k + j >= this.size) {
+                        match = false;
+                        break;
+                    }
+
+                    let module: number = this.maskedModule(pattern, i,
+                        j + SIMILARITY_PATTERN.length - 1 - k);
                     match &&= module === SIMILARITY_PATTERN[k];
-                }
-
-                if (match) {
-                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
             }
         }
 
         for (let j = 0; j < this.size; j++) {
-            for (let i = 0; i <= this.size - SIMILARITY_PATTERN.length; i++) {
-                let match: boolean = true;
+            for (let i = 0; i < this.size; i++) {
+                let match: boolean;
+                
+                match = true;
                 for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    if (i + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
                     let module: number = this.maskedModule(pattern, i + k, j);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
@@ -333,12 +348,17 @@ export class Matrix {
                 if (match) {
                     penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
-            }
 
-            for (let i = this.size - 1; i >= SIMILARITY_PATTERN.length - 1; i++) {
-                let match: boolean = true;
-                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
-                    let module: number = this.maskedModule(pattern, i - k, j);
+
+                match = true;
+                for (let k = SIMILARITY_PATTERN.length - 1; k >= 0; k--) {
+                    if (i + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
+                    let module: number = this.maskedModule(pattern,
+                        i + SIMILARITY_PATTERN.length - 1 - k, j);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
 
@@ -411,7 +431,7 @@ export class Matrix {
         while (i < length) {
             for (const block of blocks) {
                 if (j >= block.length) continue;
-                
+
                 interleaved.set(block.slice(j, j + BITS_IN_BYTE), i);
                 i += BITS_IN_BYTE;
             }

@@ -275,16 +275,16 @@ export class Analyzer {
     public blocks(): Uint8Array[] {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
-        let look: number = tableIndex(this.specification.version, this.specification.level);
+        const look: number = tableIndex(this.specification.version, this.specification.level);
         for (let i = 0; i < BLOCK_COUNT.GROUP_ONE[look]; i++) {
-            blocks.push(this.data.slice(index,
-                index + CODEWORD_COUNT.GROUP_ONE[look] * BITS_IN_BYTE - 1));
+            blocks.push(this.data.slice(index, index + 
+                CODEWORD_COUNT.GROUP_ONE[look] * BITS_IN_BYTE));
             index += CODEWORD_COUNT.GROUP_ONE[look] * BITS_IN_BYTE;
         }
 
         for (let i = 0; i < BLOCK_COUNT.GROUP_TWO[look]; i++) {
-            blocks.push(this.data.slice(index,
-                index + CODEWORD_COUNT.GROUP_TWO[look] * BITS_IN_BYTE - 1));
+            blocks.push(this.data.slice(index, index + 
+                CODEWORD_COUNT.GROUP_TWO[look] * BITS_IN_BYTE));
             index += CODEWORD_COUNT.GROUP_TWO[look] * BITS_IN_BYTE;
         }
 

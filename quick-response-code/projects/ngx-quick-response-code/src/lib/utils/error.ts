@@ -136,8 +136,8 @@ export class ErrorCorrection {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
         for (let i = 0; i < blockCount(this.version, this.level); i++) {
-            blocks.push(this.data.slice(index,
-                index + errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE - 1));
+            blocks.push(this.data.slice(index, index + 
+                errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE));
             index += errorCorrectionCodewordsPerBlock(this.version, this.level) * BITS_IN_BYTE;
         }
 
