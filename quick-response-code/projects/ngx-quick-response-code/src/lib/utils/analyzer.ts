@@ -10,16 +10,10 @@ import { Specification } from './types';
 
 export class Analyzer {
     private specification: Specification;
-
     private data: Uint8Array;
-    private formatData: Uint8Array;
-    private versionData: Uint8Array;
 
     constructor(private text: string) {
         this.specification = this.optimalSpecification();
-
-        this.versionData = new Uint8Array(VERSION_DATA_LENGTH);
-        this.formatData = new Uint8Array(FORMAT_DATA_LENGTH);
 
         let count: number = totalDataCodewords(this.specification.version,
             this.specification.level);
@@ -78,48 +72,50 @@ export class Analyzer {
     }
 
     public getVersionData(): Uint8Array {
+        let data: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH);
         let version: number = this.specification.version;
         for (let i: number = VERSION_DATA_LENGTH - 1; i >= 0; i--) {
-            this.versionData[i] = version & 1;
+            data[i] = version & 1;
             version >>= 1;
         }
 
-        return this.versionData;
+        return data;
     }
 
     public getLevel(): number {
         return this.specification.level;
     }
 
-    public setMaskPattern(pattern: number): boolean {
-        let decimal: number;
+    public getFormatDataForMaskPatterns(patterns: number[] = [0, 1, 2, 3, 4, 5, 6, 7]): Uint8Array[] {
+        let formatBlocks: Uint8Array[] = [];
+        patterns.forEach(pattern => {
+            formatBlocks.push(this.getFormatData(pattern));
+        });
+
+        return formatBlocks;
+    }
+
+    public setMaskPattern(pattern: number): void {
         this.specification.pattern = pattern;
+    }
+
+    public getFormatData(pattern: number = -1): Uint8Array {
+        let decimal: number;
+        let data: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH);
 
         decimal = this.specification.level;
         for (let i: number = 1; i >= 0; i--) {
-            this.formatData[i] = decimal & 1;
+            data[i] = decimal & 1;
             decimal >>= 1;
         }
 
-        if (decimal !== 0) {
-            return false;
-        }
-
-        decimal = this.specification.pattern;
+        decimal = (pattern === -1 ? this.specification.pattern : pattern);
         for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
-            this.formatData[i] = decimal & 1;
+            data[i] = decimal & 1;
             decimal >>= 1;
         }
 
-        if (decimal !== 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public getFormatData(): Uint8Array {
-        return this.formatData;
+        return data;
     }
 
     public setMinimumVersionAndLevel(version: number, level: number): Specification {
@@ -274,6 +270,10 @@ export class Analyzer {
             i ^= 1;
         }
 
+        return this.data;
+    }
+
+    public getEncodedData(): Uint8Array {
         return this.data;
     }
 
