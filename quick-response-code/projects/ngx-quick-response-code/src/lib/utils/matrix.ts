@@ -1,10 +1,15 @@
-import { Coordinate } from "./types";
+import { Color, Coordinate, Special } from "./types";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE } from "./constants";
+import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
+import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
 export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
-    constructor(private size: number) {
+    constructor(private size: number, private quiet: number) {
+        this.quiet = Math.max(this.quiet, QUIET_ZONE_SIZE);
+
         this.matrix = new Uint8Array(size * size);
         this.special = new Uint8Array(size * size);
     }
@@ -51,50 +56,63 @@ export class Matrix {
         return this.size * row + column;
     }
 
-    private set(value: number, index: number, special: boolean = false): boolean {
-        if (index < 0 || this.special[index]) {
+    private set(value: number, index: number, special: Special = 0): boolean {
+        if (index < 0) {
             return false;
         }
 
-        this.matrix[index] = value;
-        
-        if (special) {
-            this.special[index] = 1;
+        if (this.special[index] > 0 && this.special[index] !== special) {
+            return false;
         }
 
+        this.matrix[index] = Math.max(Math.min(Math.round(value), 1), 0);
+        this.special[index] = Math.max(special, this.special[index]);
+
         return true;
+    }
+
+    private get(index: number): number {
+        if (index < 0 || index >= this.matrix.length) {
+            return 0;
+        }
+
+        return this.matrix[index];
+    }
+
+    public imageSize(): number {
+        return this.size + this.quiet * 2;
     }
 
     public placeFinderPattern(center: Coordinate): void {
         let value: number = 0;
         for (let d = POSITION_MARKER_CENTER + 1; d > 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
-                this.set(value, this.index(i, center.y - d), true);
-                this.set(value, this.index(i, center.y + d), true);
+                this.set(value, this.index(i, center.y - d), Special.FINDER);
+                this.set(value, this.index(i, center.y + d), Special.FINDER);
             }
 
             for (let j = center.y - d; j <= center.y + d; j++) {
-                this.set(value, this.index(center.x - d, j), true);
-                this.set(value, this.index(center.x + d, j), true);
+                this.set(value, this.index(center.x - d, j), Special.FINDER);
+                this.set(value, this.index(center.x + d, j), Special.FINDER);
             }
 
-            value = (value + 1) % 2;
+            value ^= 1;
         }
 
-        this.set(1, this.index(center.x, center.y), true);
+        this.set(1, this.index(center.x, center.y), Special.FINDER);
     }
 
     public placeAlignmentPattern(center: Coordinate): void {
         let value: number = 1;
         for (let d = ALIGNMENT_PATTERN_CENTER; d >= 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
-                this.set(value, this.index(i, center.y - d), true);
-                this.set(value, this.index(i, center.y + d), true);
+                this.set(value, this.index(i, center.y - d), Special.ALIGNMENT);
+                this.set(value, this.index(i, center.y + d), Special.ALIGNMENT);
             }
 
             for (let j = center.y - d; j <= center.y + d; j++) {
-                this.set(value, this.index(center.x - d, j), true);
-                this.set(value, this.index(center.x + d, j), true);
+                this.set(value, this.index(center.x - d, j), Special.ALIGNMENT);
+                this.set(value, this.index(center.x + d, j), Special.ALIGNMENT);
             }
 
             value ^= 1;
@@ -104,8 +122,8 @@ export class Matrix {
     public addTimingPattern(): void {
         let value: number = 1;
         for (let k = POSITION_MARKER_SIZE + 1; k < this.size - POSITION_MARKER_SIZE - 1; k++) {
-            this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), true);
-            this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), true);
+            this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), Special.TIMING);
+            this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), Special.TIMING);
 
             value ^= 1;
         }
@@ -114,57 +132,72 @@ export class Matrix {
     public addFormatInformation(data: Uint8Array): void {
         let i: number = 0;
         for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
-            if (this.set(data[i], this.index(POSITION_MARKER_SIZE + 1, k), true)) {
+            if (this.set(data[i],
+                this.index(POSITION_MARKER_SIZE + 1, k),
+                    Special.FORMAT)) {
                 i++;
             }
         }
 
         for (let k = POSITION_MARKER_SIZE; k >= 0; k--) {
-            if (this.set(data[i], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+            if (this.set(data[i],
+                this.index(k, POSITION_MARKER_SIZE + 1),
+                    Special.FORMAT)) {
                 i++;
             }
         }
 
         let j: number = 0;
         for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
-            if (this.set(data[j], this.index(k, POSITION_MARKER_SIZE + 1), true)) {
+            if (this.set(data[j],
+                this.index(k, POSITION_MARKER_SIZE + 1),
+                    Special.FORMAT)) {
                 j++;
             }
         }
 
         for (let k = POSITION_MARKER_SIZE + 1; k > 0; k--) {
-            if (this.set(data[j], this.index(POSITION_MARKER_SIZE + 1, this.size - k), true)) {
+            if (this.set(data[j],
+                this.index(POSITION_MARKER_SIZE + 1, this.size - k),
+                    Special.FORMAT)) {
                 j++;
             }
         }
 
         // The dark module
-        this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1), true);
+        this.set(1,
+            this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1),
+                Special.DARK);
     }
 
     public addVersionInformation(version: number, data: Uint8Array): boolean {
-        if (version < 7) {
+        if (version < FORMAT_COMMENCE) {
             return false;
         }
 
-        let index: number = 0;
+        let index: number = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 6; j++) {
-                this.set(data[index], this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j), true);
-                this.set(data[index], this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)), true);
+                this.set(data[index],
+                    this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j),
+                        Special.VERSION);
+                
+                this.set(data[index],
+                    this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)),
+                        Special.VERSION);
 
-                index++;
+                index--;
             }
         }
 
-        return index === data.length;
+        return index === -1;
     }
 
     public addData(data: Uint8Array): void {
         let up: boolean = true;
         let index: number = 0;
         let j: number = this.size - 1;
-        while (j >= 0) {
+        while (j > 0) {
             // Check for timing pattern
             let skip: boolean = true;
             for (let i = 0; i < this.size; i++) {
@@ -176,40 +209,26 @@ export class Matrix {
                 continue;
             }
 
-            let shift: number = 0;
-            if (up) {
-                for (let i = this.size - 1; i >= 0; i--) {
+            for (let i: number = (up ? this.size - 1 : 0); (up ? i >= 0 : i < this.size); (up ? i--: i++)) {
+                for (let k: number = 0; k < 2; k++) {
                     if (index >= data.length) {
                         break;
                     }
 
-                    if (this.set(data[index], this.index(i + shift, j), false)) {
+                    if (this.set(data[index], this.index(i, j - k))) {
                         index++;
                     }
-
-                    shift ^= 1;
-                }
-            } else {
-                for (let i = 0; i < this.size; i++) {
-                    if (index >= data.length) {
-                        break;
-                    }
-                    
-                    if (this.set(data[index], this.index(i + shift, j), false)) {
-                        index++;
-                    }
-
-                    shift ^= 1;
                 }
             }
 
             up = !up;
+            j -= 2;
         }
     }
 
     private maskedModule(pattern: number, row: number, column: number): number {
         let module: number = this.matrix[this.index(row, column)] ^ 
-            (!this.special[this.index(row, column)] && 
+            (this.special[this.index(row, column)] === 0 && 
                 this.condition(pattern, row, column) ? 1 : 0);
 
         return module;
@@ -290,9 +309,16 @@ export class Matrix {
     private finderPatternSimilarityPenalty(pattern: number): number {
         let penalty: number = 0;
         for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j <= this.size - SIMILARITY_PATTERN.length; j++) {
-                let match: boolean = true;
+            for (let j = 0; j < this.size; j++) {
+                let match: boolean;
+                
+                match = true;
                 for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    if (j + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
                     let module: number = this.maskedModule(pattern, i, j + k);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
@@ -300,25 +326,32 @@ export class Matrix {
                 if (match) {
                     penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
-            }
 
-            for (let j = this.size - 1; j >= SIMILARITY_PATTERN.length - 1; j++) {
-                let match: boolean = true;
-                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
-                    let module: number = this.maskedModule(pattern, i, j - k);
+                match = true;
+                for (let k = SIMILARITY_PATTERN.length - 1; k >= 0; k--) {
+                    if (k + j >= this.size) {
+                        match = false;
+                        break;
+                    }
+
+                    let module: number = this.maskedModule(pattern, i,
+                        j + SIMILARITY_PATTERN.length - 1 - k);
                     match &&= module === SIMILARITY_PATTERN[k];
-                }
-
-                if (match) {
-                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
             }
         }
 
         for (let j = 0; j < this.size; j++) {
-            for (let i = 0; i <= this.size - SIMILARITY_PATTERN.length; i++) {
-                let match: boolean = true;
+            for (let i = 0; i < this.size; i++) {
+                let match: boolean;
+                
+                match = true;
                 for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
+                    if (i + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
                     let module: number = this.maskedModule(pattern, i + k, j);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
@@ -326,12 +359,17 @@ export class Matrix {
                 if (match) {
                     penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
                 }
-            }
 
-            for (let i = this.size - 1; i >= SIMILARITY_PATTERN.length - 1; i++) {
-                let match: boolean = true;
-                for (let k = 0; k < SIMILARITY_PATTERN.length; k++) {
-                    let module: number = this.maskedModule(pattern, i - k, j);
+
+                match = true;
+                for (let k = SIMILARITY_PATTERN.length - 1; k >= 0; k--) {
+                    if (i + k >= this.size) {
+                        match = false;
+                        break;
+                    }
+
+                    let module: number = this.maskedModule(pattern,
+                        i + SIMILARITY_PATTERN.length - 1 - k, j);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
 
@@ -404,11 +442,9 @@ export class Matrix {
         while (i < length) {
             for (const block of blocks) {
                 if (j >= block.length) continue;
-                
-                for (let k = 0; k < BITS_IN_BYTE; k++) {
-                    interleaved[i] = block[j + k];
-                    i++;
-                }
+
+                interleaved.set(block.slice(j, j + BITS_IN_BYTE), i);
+                i += BITS_IN_BYTE;
             }
 
             j += BITS_IN_BYTE;
@@ -416,4 +452,46 @@ export class Matrix {
 
         return interleaved;
     }
+
+    public merge(blocks: Uint8Array[]): Uint8Array {
+        let length: number = 0;
+        blocks.forEach(block => {
+            length += block.length;
+        });
+
+        let merged: Uint8Array = new Uint8Array(length);
+
+        let i: number = 0;
+        for (const block of blocks) {
+            merged.set(block, i);
+            i += block.length;
+        }
+
+        return merged;
+    }
+
+    public generateRGBAMap(light: Color, dark: Color): Uint8Array {
+        const size: number = this.imageSize();
+        let map: Uint8Array = new Uint8Array(size * size * 4);
+        for (let i: number = 0; i < size; i++) {
+            for (let j: number = 0; j < size; j++) {
+                let values: Uint8Array = colorValues(
+                    (this.get(this.index(i - this.quiet, j - this.quiet)) === 1 ? 
+                        dark : light));
+                
+                let k: number = (i * size + j) * 4;
+                for (const value of values) {
+                    map[k++] = value;
+                }
+            }
+        }
+
+        return map;
+    }
+}
+
+export function colorValues(color: Color): Uint8Array {
+    return new Uint8Array(
+        [color.red, color.green, color.blue, color.alpha]
+    );
 }
