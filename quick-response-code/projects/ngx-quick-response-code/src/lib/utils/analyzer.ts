@@ -1,4 +1,5 @@
-import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION, BLOCK_COUNT, CODEWORD_COUNT, PADDING_DATA } from './constants';
+import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION} from './constants'
+import { BLOCK_COUNT, CODEWORD_COUNT, PADDING_DATA } from './constants';
 import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACITY } from './constants';
 import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
 import { NUMERIC_GROUP_SIZE, NUMERIC_REGULAR_EXPRESSION, VERSION, VERSION_DATA_LENGTH, VERSION_MULTIPLIER } from './constants';
@@ -271,10 +272,6 @@ export class Analyzer {
         while (index < this.data.length) {
             index = this.fillData(index, PADDING_DATA[i], BITS_IN_BYTE);
             i ^= 1;
-        }
-
-        if (index !== this.data.length) {
-            throw Error("Data sequence and size mismatch.");
         }
 
         return this.data;
