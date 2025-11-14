@@ -37,11 +37,13 @@ export const VERSION_GOLAY: number = 7973; // 0b1111100100101
 
 export const QUIET_ZONE_SIZE: number = 4;
 
+export const PADDING_DATA: number[] = [236, 17];
+
 export const ENCODING = {
-    NUMERIC: 0,
-    ALPHANUMERIC: 1,
-    BYTE: 2,
-    KANJI: 3,
+    NUMERIC: 1,
+    ALPHANUMERIC: 2,
+    BYTE: 4,
+    KANJI: 8,
     ECI: 7
 };
 

@@ -1,9 +1,9 @@
-import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION, BLOCK_COUNT, CODEWORD_COUNT } from './constants';
+import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION, BLOCK_COUNT, CODEWORD_COUNT, PADDING_DATA } from './constants';
 import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACITY } from './constants';
 import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
 import { NUMERIC_GROUP_SIZE, NUMERIC_REGULAR_EXPRESSION, VERSION, VERSION_DATA_LENGTH, VERSION_MULTIPLIER } from './constants';
 import { KanjiEncoder } from './kanji';
-import { ALPHANUMERIC_TABLE } from './tables';
+import { ALPHANUMERIC_TABLE, bitsInAlphaNumericGroup, bitsInNumericGroup, encodingIndex } from './tables';
 import { characterCountLength, tableIndex, totalDataCodewords } from './tables';
 import { Specification } from './types';
 
@@ -46,28 +46,18 @@ export class Analyzer {
         return ENCODING.ECI;
     }
 
-    public bitsInNumericGroup(groupSize: number): number {
-        if (groupSize === 0) return 0;
-        return groupSize * 3 + 1;
-    }
-
-    public bitsInAlphaNumericGroup(groupSize: number): number {
-        if (groupSize === 0) return 0;
-        return groupSize * 5 + 1;
-    }
-
     public bitLength(): number {
         switch (this.specification.encoding) {
             case ENCODING.NUMERIC:
-                return this.bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
+                return bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / NUMERIC_GROUP_SIZE) + 
-                        this.bitsInNumericGroup(this.text.length % NUMERIC_GROUP_SIZE);
+                        bitsInNumericGroup(this.text.length % NUMERIC_GROUP_SIZE);
                 break;
             
             case ENCODING.ALPHANUMERIC:
-                return this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
+                return bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / ALPHANUMERIC_GROUP_SIZE) + 
-                        this.bitsInAlphaNumericGroup(this.text.length & 1);
+                        bitsInAlphaNumericGroup(this.text.length & 1);
                 break;
             
             case ENCODING.BYTE:
@@ -91,6 +81,12 @@ export class Analyzer {
     }
 
     public getVersionData(): Uint8Array {
+        let version: number = this.specification.version;
+        for (let i: number = VERSION_DATA_LENGTH - 1; i >= 0; i--) {
+            this.versionData[i] = version & 1;
+            version >>= 1;
+        }
+
         return this.versionData;
     }
 
@@ -101,6 +97,8 @@ export class Analyzer {
     public setMaskPattern(pattern: number): boolean {
         let decimal: number;
         this.specification.pattern = pattern;
+
+        console.log(this.specification);
 
         decimal = this.specification.level;
         for (let i: number = 1; i >= 0; i--) {
@@ -143,7 +141,7 @@ export class Analyzer {
 
         while (version <= VERSION.MAX) {
             for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= minimumLevel; level--) {
-                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + encoding;
+                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + encodingIndex(encoding);
                 if (CHARACTER_CAPACITY[index] < characterCount) {
                     continue;
                 }
@@ -168,30 +166,33 @@ export class Analyzer {
     }
 
     private fillData(index: number, value: number, size: number): number {
-        for (let i = index + size - 1; i >= index; i--) {
-            this.data[i] = value % 2;
-            value /= 2;
+        if (index + size > this.data.length) {
+            return index;
         }
 
-        return (index + size) % this.data.length;
+        for (let i = index + size - 1; i >= index; i--) {
+            this.data[i] = value & 1;
+            value >>= 1;
+        }
+
+        return index + size;
     }
 
     private fillNumeric(index: number): number {
         let i: number = 0;
-        while (i + NUMERIC_GROUP_SIZE <= this.data.length) {
-            let value: number = parseInt(this.text.substring(i, NUMERIC_GROUP_SIZE), 10);
-            index = this.fillData(index, value, this.bitsInNumericGroup(NUMERIC_GROUP_SIZE));
+        while (i + NUMERIC_GROUP_SIZE <= this.text.length) {
+            let value: number = parseInt(this.text.substring(i, i + NUMERIC_GROUP_SIZE), 10);
+            index = this.fillData(index, value, bitsInNumericGroup(NUMERIC_GROUP_SIZE));
             
             i += NUMERIC_GROUP_SIZE;
         }
 
-        if (i < this.data.length) {
+        if (i < this.text.length) {
             let value: number = parseInt(this.text.substring(i), 10);
-            index = this.fillData(index, value,
-                this.bitsInAlphaNumericGroup(this.text.length - i));
+            index = this.fillData(index, value, bitsInNumericGroup(this.text.length - i));
         }
 
-        return index % this.data.length;
+        return index;
     }
 
     private fillAlphanumeric(index: number): number {
@@ -199,18 +200,17 @@ export class Analyzer {
         while (i + ALPHANUMERIC_GROUP_SIZE <= this.text.length) {
             let value: number = ALPHANUMERIC_TABLE[this.text[i]] * ALPHANUMERIC_MULTIPLIER +
                 ALPHANUMERIC_TABLE[this.text[i + 1]];
-            index = this.fillData(index, value,
-                this.bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE));
+            index = this.fillData(index, value, bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE));
 
             i += ALPHANUMERIC_GROUP_SIZE;
         }
 
         if (i < this.text.length) {
             index = this.fillData(index, ALPHANUMERIC_TABLE[this.text[i]],
-                this.bitsInAlphaNumericGroup(1));
+                bitsInAlphaNumericGroup(1));
         }
 
-        return index % this.data.length;
+        return index;
     }
 
     private fillByte(index: number): number {
@@ -221,7 +221,7 @@ export class Analyzer {
             index = this.fillData(index, character, BITS_IN_BYTE);
         }
 
-        return index % this.data.length;
+        return index;
     }
 
     private fillKanjiKana(index: number): number {
@@ -234,7 +234,7 @@ export class Analyzer {
             index = this.fillData(index, (value >> 8) * 0xC0 + (value & 0xFF), BITS_IN_KANJI);
         }
 
-        return index % this.data.length;
+        return index;
     }
 
     public encode(): Uint8Array {
@@ -242,7 +242,9 @@ export class Analyzer {
 
         index = this.fillData(index, this.specification.encoding, 4);
         index = this.fillData(index, this.text.length,
-            characterCountLength(this.specification.version, this.specification.encoding));
+            characterCountLength(this.specification.version,
+                this.specification.encoding));
+
         switch (this.specification.encoding) {
             case ENCODING.NUMERIC:
                 index = this.fillNumeric(index);
@@ -263,12 +265,23 @@ export class Analyzer {
             default:
                 break;
         };
-        index = this.fillData(index, 0, this.data.length - index);
-        
-        if (index !== 0) {
-            throw Error("Data sequence and size mismatch.");
+
+        // Terminator Bits
+        index = this.fillData(index, 0,
+            Math.min(4, this.data.length - index));
+        // Padding Bits
+        index = this.fillData(index, 0,
+            Math.ceil(index / 8) * 8 - index);
+
+        let i: number = 0;
+        while (index < this.data.length) {
+            index = this.fillData(index, PADDING_DATA[i], BITS_IN_BYTE);
+            i ^= 1;
         }
 
+        if (index !== this.data.length) {
+            throw Error("Data sequence and size mismatch.");
+        }
         return this.data;
     }
 
