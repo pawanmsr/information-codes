@@ -402,6 +402,8 @@ export class Matrix {
 
     public applyMask(): number {
         // Find optimal mask pattern
+
+        // TODO: check mask penalty
         let minimumMaskPenalty: number = -1;
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
@@ -470,7 +472,7 @@ export class Matrix {
         return merged;
     }
 
-    public generateRGBAMap(light: Color, dark: Color): Uint8Array {
+    public getRGBAMap(light: Color, dark: Color): Uint8Array {
         const size: number = this.imageSize();
         let map: Uint8Array = new Uint8Array(size * size * 4);
         for (let i: number = 0; i < size; i++) {
