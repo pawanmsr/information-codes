@@ -3,7 +3,7 @@ import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACIT
 import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
 import { NUMERIC_GROUP_SIZE, NUMERIC_REGULAR_EXPRESSION, VERSION, VERSION_DATA_LENGTH, VERSION_MULTIPLIER } from './constants';
 import { KanjiEncoder } from './kanji';
-import { ALPHANUMERIC_TABLE, bitsInAlphaNumericGroup, bitsInNumericGroup, encodingIndex } from './tables';
+import { ALPHANUMERIC_TABLE, bitsInAlphaNumericGroup, bitsInNumericGroup, encodingIndex, indexLevel, levelIndex } from './tables';
 import { characterCountLength, tableIndex, totalDataCodewords } from './tables';
 import { Specification } from './types';
 
@@ -98,8 +98,6 @@ export class Analyzer {
         let decimal: number;
         this.specification.pattern = pattern;
 
-        console.log(this.specification);
-
         decimal = this.specification.level;
         for (let i: number = 1; i >= 0; i--) {
             this.formatData[i] = decimal & 1;
@@ -140,8 +138,8 @@ export class Analyzer {
         let version: number = minimumVersion;
 
         while (version <= VERSION.MAX) {
-            for (let level = ERROR_CORRECTION_LEVEL.HIGH; level >= minimumLevel; level--) {
-                let index: number = (version - 1 + level) * VERSION_MULTIPLIER + encodingIndex(encoding);
+            for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH); i >= levelIndex(minimumLevel); i--) {
+                let index: number = (version - 1 + i) * VERSION_MULTIPLIER + encodingIndex(encoding);
                 if (CHARACTER_CAPACITY[index] < characterCount) {
                     continue;
                 }
@@ -149,7 +147,7 @@ export class Analyzer {
                 return {
                     encoding: encoding,
                     version: version,
-                    level: level,
+                    level: indexLevel(i),
                     pattern: -1
                 };
             }
@@ -285,7 +283,7 @@ export class Analyzer {
         return this.data;
     }
 
-    public blocks(): Uint8Array[] {
+    public getBlocks(): Uint8Array[] {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
         const look: number = tableIndex(this.specification.version, this.specification.level);
