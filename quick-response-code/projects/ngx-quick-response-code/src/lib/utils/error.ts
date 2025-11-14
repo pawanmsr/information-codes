@@ -99,7 +99,7 @@ export class ErrorCorrection {
         return coefficients;
     }
 
-    private errorBlock(remainder: Uint8Array): Uint8Array {
+    private getErrorBlock(remainder: Uint8Array): Uint8Array {
         let length: number = remainder.length * BITS_IN_BYTE;
         let block: Uint8Array = new Uint8Array(length);
 
@@ -121,7 +121,7 @@ export class ErrorCorrection {
             let dividend: Uint8Array = this.messagePolynomial(block);
             let remainder: Uint8Array = this.polynomialDivision(divisor, dividend);
 
-            let errorBlock: Uint8Array = this.errorBlock(remainder);
+            let errorBlock: Uint8Array = this.getErrorBlock(remainder);
             this.data.set(errorBlock, index);
             index += errorBlock.length;
         }
@@ -141,7 +141,16 @@ export class ErrorCorrection {
         return blocks;
     }
 
-    public formatError(data: Uint8Array): Uint8Array {
+    public getFormatErrorsForMaskPatterns(datas: Uint8Array[]): Uint8Array[] {
+        let formatErrors: Uint8Array[] = [];
+        datas.forEach(data => {
+            formatErrors.push(this.getFormatError(data));
+        });
+
+        return formatErrors;
+    }
+
+    public getFormatError(data: Uint8Array): Uint8Array {
         let decimal, index: number;
         let dividend: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
         let divisor: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH + 1);
@@ -170,7 +179,7 @@ export class ErrorCorrection {
         return dividend.slice(FORMAT_DATA_LENGTH, FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
     }
 
-    public versionError(data: Uint8Array): Uint8Array {
+    public getVersionError(data: Uint8Array): Uint8Array {
         let decimal, index: number;
         let dividend: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
         let divisor: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH + 1);
