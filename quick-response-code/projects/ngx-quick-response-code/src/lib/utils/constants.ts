@@ -26,16 +26,6 @@ export const ERROR_CORRECTION_LEVEL = {
     H: 'H'
 };
 
-export const enum SPECIAL {
-    DATA = 0,
-    FINDER,
-    ALIGNMENT,
-    TIMING,
-    DARK,
-    FORMAT,
-    VERSION,
-}
-
 export const FIELD_SIZE: number = 256;
 export const FIELD_MODULO: number = 285; // 0b100011101
 
