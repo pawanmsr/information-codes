@@ -16,3 +16,13 @@ export type Color = {
     blue: number;
     alpha: number;
 };
+
+export enum Special {
+    DATA = 0,
+    FINDER,
+    ALIGNMENT,
+    TIMING,
+    DARK,
+    FORMAT,
+    VERSION,
+}

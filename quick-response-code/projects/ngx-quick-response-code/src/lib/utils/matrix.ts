@@ -1,5 +1,5 @@
-import { Color, Coordinate } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE, SPECIAL } from "./constants";
+import { Color, Coordinate, Special } from "./types";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -56,7 +56,7 @@ export class Matrix {
         return this.size * row + column;
     }
 
-    private set(value: number, index: number, special: SPECIAL = 0): boolean {
+    private set(value: number, index: number, special: Special = 0): boolean {
         if (index < 0) {
             return false;
         }
@@ -87,32 +87,32 @@ export class Matrix {
         let value: number = 0;
         for (let d = POSITION_MARKER_CENTER + 1; d > 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
-                this.set(value, this.index(i, center.y - d), SPECIAL.FINDER);
-                this.set(value, this.index(i, center.y + d), SPECIAL.FINDER);
+                this.set(value, this.index(i, center.y - d), Special.FINDER);
+                this.set(value, this.index(i, center.y + d), Special.FINDER);
             }
 
             for (let j = center.y - d; j <= center.y + d; j++) {
-                this.set(value, this.index(center.x - d, j), SPECIAL.FINDER);
-                this.set(value, this.index(center.x + d, j), SPECIAL.FINDER);
+                this.set(value, this.index(center.x - d, j), Special.FINDER);
+                this.set(value, this.index(center.x + d, j), Special.FINDER);
             }
 
             value ^= 1;
         }
 
-        this.set(1, this.index(center.x, center.y), SPECIAL.FINDER);
+        this.set(1, this.index(center.x, center.y), Special.FINDER);
     }
 
     public placeAlignmentPattern(center: Coordinate): void {
         let value: number = 1;
         for (let d = ALIGNMENT_PATTERN_CENTER; d >= 0; d--) {
             for (let i = center.x - d; i <= center.x + d; i++) {
-                this.set(value, this.index(i, center.y - d), SPECIAL.ALIGNMENT);
-                this.set(value, this.index(i, center.y + d), SPECIAL.ALIGNMENT);
+                this.set(value, this.index(i, center.y - d), Special.ALIGNMENT);
+                this.set(value, this.index(i, center.y + d), Special.ALIGNMENT);
             }
 
             for (let j = center.y - d; j <= center.y + d; j++) {
-                this.set(value, this.index(center.x - d, j), SPECIAL.ALIGNMENT);
-                this.set(value, this.index(center.x + d, j), SPECIAL.ALIGNMENT);
+                this.set(value, this.index(center.x - d, j), Special.ALIGNMENT);
+                this.set(value, this.index(center.x + d, j), Special.ALIGNMENT);
             }
 
             value ^= 1;
@@ -122,8 +122,8 @@ export class Matrix {
     public addTimingPattern(): void {
         let value: number = 1;
         for (let k = POSITION_MARKER_SIZE + 1; k < this.size - POSITION_MARKER_SIZE - 1; k++) {
-            this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), SPECIAL.TIMING);
-            this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), SPECIAL.TIMING);
+            this.set(value, this.index(POSITION_MARKER_SIZE - 1, k), Special.TIMING);
+            this.set(value, this.index(k, POSITION_MARKER_SIZE - 1), Special.TIMING);
 
             value ^= 1;
         }
@@ -134,7 +134,7 @@ export class Matrix {
         for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
             if (this.set(data[i],
                 this.index(POSITION_MARKER_SIZE + 1, k),
-                    SPECIAL.FORMAT)) {
+                    Special.FORMAT)) {
                 i++;
             }
         }
@@ -142,7 +142,7 @@ export class Matrix {
         for (let k = POSITION_MARKER_SIZE; k >= 0; k--) {
             if (this.set(data[i],
                 this.index(k, POSITION_MARKER_SIZE + 1),
-                    SPECIAL.FORMAT)) {
+                    Special.FORMAT)) {
                 i++;
             }
         }
@@ -151,7 +151,7 @@ export class Matrix {
         for (let k = this.size - 1; k > this.size - POSITION_MARKER_SIZE - 1; k--) {
             if (this.set(data[j],
                 this.index(k, POSITION_MARKER_SIZE + 1),
-                    SPECIAL.FORMAT)) {
+                    Special.FORMAT)) {
                 j++;
             }
         }
@@ -159,7 +159,7 @@ export class Matrix {
         for (let k = POSITION_MARKER_SIZE + 1; k > 0; k--) {
             if (this.set(data[j],
                 this.index(POSITION_MARKER_SIZE + 1, this.size - k),
-                    SPECIAL.FORMAT)) {
+                    Special.FORMAT)) {
                 j++;
             }
         }
@@ -167,7 +167,7 @@ export class Matrix {
         // The dark module
         this.set(1,
             this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1),
-                SPECIAL.DARK);
+                Special.DARK);
     }
 
     public addVersionInformation(version: number, data: Uint8Array): boolean {
@@ -180,11 +180,11 @@ export class Matrix {
             for (let j = 0; j < 6; j++) {
                 this.set(data[index],
                     this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j),
-                        SPECIAL.VERSION);
+                        Special.VERSION);
                 
                 this.set(data[index],
                     this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)),
-                        SPECIAL.VERSION);
+                        Special.VERSION);
 
                 index--;
             }

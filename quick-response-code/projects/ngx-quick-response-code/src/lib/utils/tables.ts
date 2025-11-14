@@ -91,6 +91,28 @@ export function indexLevel(index: number): number {
     return -1;
 }
 
+export function identifierLevel(level: string): number {
+    switch (level.toUpperCase()) {
+        case ERROR_CORRECTION_LEVEL.L:
+        case "LOW":
+            return ERROR_CORRECTION_LEVEL.LOW;
+        
+        case ERROR_CORRECTION_LEVEL.M:
+        case "MEDIUM":
+            return ERROR_CORRECTION_LEVEL.MEDIUM;
+        
+        case ERROR_CORRECTION_LEVEL.Q:
+        case "QUARTILE":
+            return ERROR_CORRECTION_LEVEL.QUARTILE;
+        
+        case ERROR_CORRECTION_LEVEL.H:
+        case "HIGH":
+            return ERROR_CORRECTION_LEVEL.HIGH;
+    }
+
+    return -1;
+}
+
 export function characterCountLength(version: number, encoding: number): number {
     let index: number = 0;
     for (const range of CHARACTER_COUNT.RANGES) {
