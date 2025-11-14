@@ -18,28 +18,27 @@ export class Matrix {
         switch (pattern) {
             case 0:
                 return (row + column) % 2 === 0;
-                break;
+            
             case 1:
                 return row % 2 === 0;
-                break;
+            
             case 2:
                 return column % 3 === 0;
-                break;
+            
             case 3:
                 return (row + column) % 3 === 0;
-                break;
+            
             case 4:
                 return (Math.floor(row / 2) + Math.floor(column / 3)) % 2 === 0;
-                break;
+            
             case 5:
                 return (row + column) % 2 + (row * column) % 3 === 0;
-                break;
+            
             case 6:
                 return ((row * column) % 3 + row * column) % 2 === 0;
-                break;
+            
             case 7:
                 return ((row * column) % 3 + row + column) % 2 === 0;
-                break;
         
             default:
                 break;
@@ -227,11 +226,10 @@ export class Matrix {
     }
 
     private maskedModule(pattern: number, row: number, column: number): number {
-        let module: number = this.matrix[this.index(row, column)] ^ 
-            (this.special[this.index(row, column)] === 0 && 
-                this.condition(pattern, row, column) ? 1 : 0);
-
-        return module;
+        let i: number = this.index(row, column);
+        return this.matrix[i] ^ (this.special[i] === 0 && 
+            this.condition(pattern, row, column) ?
+                1 : 0);
     }
 
     private consecutiveFivePenalty(pattern: number): number {
@@ -338,6 +336,10 @@ export class Matrix {
                         j + SIMILARITY_PATTERN.length - 1 - k);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
             }
         }
 
@@ -394,13 +396,15 @@ export class Matrix {
             }
         }
 
-        let multiplier: number = Math.ceil(darks * 100 / (this.size * this.size * 5));
-        let penalty: number = Math.min(multiplier, 10 - multiplier) * PENALTY.UNEVEN_RATIO;
+        let value: number = darks * 100 / (this.size * this.size * 5);
+        let penalty: number = Math.min(Math.ceil(value), Math.abs(10 - Math.ceil(value)),
+            Math.floor(value), Math.abs(10 - Math.floor(value))) * 
+                PENALTY.UNEVEN_RATIO;
 
         return penalty;
     }
 
-    public applyMask(): number {
+    public applyMask(formatBlocks: Uint8Array[], errorBlocks: Uint8Array[]): number {
         // Find optimal mask pattern
 
         // TODO: check mask penalty
@@ -408,6 +412,9 @@ export class Matrix {
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
             let penalty: number = 0;
+
+            this.addFormatInformation(this.merge([formatBlocks[pattern],
+                errorBlocks[pattern]]));
             
             penalty += this.consecutiveFivePenalty(pattern);
             penalty += this.sameTwoCrossTwoPenalty(pattern);
