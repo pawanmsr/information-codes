@@ -1,5 +1,5 @@
 import { Color, Coordinate, Special } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE } from "./constants";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -129,6 +129,12 @@ export class Matrix {
     }
 
     public addFormatInformation(data: Uint8Array): void {
+        let decimal: number = FORMAT_MASK;
+        for (let i: number = data.length - 1; i >= 0; i--) {
+            data[i] ^= decimal & 1;
+            decimal >>= 1;
+        }
+
         let i: number = 0;
         for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
             if (this.set(data[i],
@@ -404,7 +410,7 @@ export class Matrix {
         return penalty;
     }
 
-    public applyMask(formatBlocks: Uint8Array[], errorBlocks: Uint8Array[]): number {
+    public applyOptimalMask(formatBlocks: Uint8Array[], errorBlocks: Uint8Array[]): number {
         // Find optimal mask pattern
 
         // TODO: check mask penalty

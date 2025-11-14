@@ -100,17 +100,24 @@ export class Analyzer {
     }
 
     public getFormatData(pattern: number = -1): Uint8Array {
-        let decimal: number;
+        let decimal: number = pattern;
         let data: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH);
 
-        decimal = this.specification.level;
-        for (let i: number = 1; i >= 0; i--) {
+        if (decimal < 0) {
+            decimal = this.specification.pattern;
+        }
+
+        if (decimal < 0) {
+            return data;
+        }
+
+        for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
             data[i] = decimal & 1;
             decimal >>= 1;
         }
 
-        decimal = (pattern === -1 ? this.specification.pattern : pattern);
-        for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
+        decimal = this.specification.level;
+        for (let i: number = 1; i >= 0; i--) {
             data[i] = decimal & 1;
             decimal >>= 1;
         }
@@ -132,7 +139,8 @@ export class Analyzer {
 
         while (version <= VERSION.MAX) {
             for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH); i >= levelIndex(minimumLevel); i--) {
-                let index: number = (version - 1 + i) * VERSION_MULTIPLIER + encodingIndex(encoding);
+                let index: number = (version - 1) * VERSION_MULTIPLIER * VERSION_MULTIPLIER + 
+                    i * VERSION_MULTIPLIER + encodingIndex(encoding);
                 if (CHARACTER_CAPACITY[index] < characterCount) {
                     continue;
                 }
