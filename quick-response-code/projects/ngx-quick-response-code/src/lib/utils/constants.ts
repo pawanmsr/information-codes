@@ -19,7 +19,11 @@ export const ERROR_CORRECTION_LEVEL = {
     LOW: 1,
     MEDIUM: 0,
     QUARTILE: 3,
-    HIGH: 2
+    HIGH: 2,
+    L: 'L',
+    M: 'M',
+    Q: 'Q',
+    H: 'H'
 };
 
 export const enum SPECIAL {
