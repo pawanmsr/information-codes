@@ -52,21 +52,17 @@ export class Analyzer {
                 return bitsInNumericGroup(NUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / NUMERIC_GROUP_SIZE) + 
                         bitsInNumericGroup(this.text.length % NUMERIC_GROUP_SIZE);
-                break;
             
             case ENCODING.ALPHANUMERIC:
                 return bitsInAlphaNumericGroup(ALPHANUMERIC_GROUP_SIZE) * 
                     Math.floor(this.text.length / ALPHANUMERIC_GROUP_SIZE) + 
                         bitsInAlphaNumericGroup(this.text.length & 1);
-                break;
             
             case ENCODING.BYTE:
                 return this.text.length * BITS_IN_BYTE;
-                break;
             
             case ENCODING.KANJI:
                 return this.text.length * BITS_IN_KANJI;
-                break;
         
             default:
                 // TODO: calculate length for ECI
@@ -280,6 +276,7 @@ export class Analyzer {
         if (index !== this.data.length) {
             throw Error("Data sequence and size mismatch.");
         }
+
         return this.data;
     }
 
