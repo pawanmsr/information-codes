@@ -1,11 +1,12 @@
-import { BLOCK_COUNT, CHARACTER_COUNT, CODEWORD_COUNT, ERROR_CORRECTION_CODEWORDS_PER_BLOCK, VERSION_MULTIPLIER } from './constants';
+import { BLOCK_COUNT, CHARACTER_COUNT, CODEWORD_COUNT, ENCODING, ERROR_CORRECTION_LEVEL } from './constants'
+import { ERROR_CORRECTION_CODEWORDS_PER_BLOCK, VERSION_MULTIPLIER } from './constants';
 
 interface Dictionary {
     [key: string]: number
 }
 
 export function tableIndex(version: number, level: number): number {
-    return (version - 1) * VERSION_MULTIPLIER + level;
+    return (version - 1) * VERSION_MULTIPLIER + levelIndex(level);
 }
 
 export function blockCount(version: number, level: number): number {
@@ -23,6 +24,73 @@ export function totalDataCodewords(version: number, level: number): number {
     return count;
 }
 
+export function bitsInNumericGroup(groupSize: number): number {
+    if (groupSize === 0) return 0;
+    return groupSize * 3 + 1;
+}
+
+export function bitsInAlphaNumericGroup(groupSize: number): number {
+    if (groupSize === 0) return 0;
+    return groupSize * 5 + 1;
+}
+
+export function encodingIndex(encoding: number): number {
+    switch (encoding) {
+        case ENCODING.NUMERIC:
+            return 0;
+        
+        case ENCODING.ALPHANUMERIC:
+            return 1;
+        
+        case ENCODING.BYTE:
+            return 2;
+        
+        case ENCODING.KANJI:
+            return 3;
+    
+        case ENCODING.ECI:
+            return 4;
+    }
+
+    return -1;
+}
+
+export function levelIndex(level: number): number {
+    switch (level) {
+        case ERROR_CORRECTION_LEVEL.LOW:
+            return 0;
+        
+        case ERROR_CORRECTION_LEVEL.MEDIUM:
+            return 1;
+        
+        case ERROR_CORRECTION_LEVEL.QUARTILE:
+            return 2;
+        
+        case ERROR_CORRECTION_LEVEL.HIGH:
+            return 3;
+    }
+
+    return -1;
+}
+
+export function indexLevel(index: number): number {
+    switch (index) {
+        case 0:
+            return ERROR_CORRECTION_LEVEL.LOW;
+        
+        case 1:
+            return ERROR_CORRECTION_LEVEL.MEDIUM;
+
+        case 2:
+            return ERROR_CORRECTION_LEVEL.QUARTILE;
+        
+        case 3:
+            return ERROR_CORRECTION_LEVEL.HIGH;
+    }
+
+    return -1;
+}
+
 export function characterCountLength(version: number, encoding: number): number {
     let index: number = 0;
     for (const range of CHARACTER_COUNT.RANGES) {
@@ -34,7 +102,7 @@ export function characterCountLength(version: number, encoding: number): number 
         break;
     }
 
-    let length: number = CHARACTER_COUNT.BITS[(encoding - 1) * 
+    let length: number = CHARACTER_COUNT.BITS[encodingIndex(encoding) * 
         CHARACTER_COUNT.RANGES.length + index];
     
     return length;

@@ -22,6 +22,16 @@ export const ERROR_CORRECTION_LEVEL = {
     HIGH: 2
 };
 
+export const enum SPECIAL {
+    DATA = 0,
+    FINDER,
+    ALIGNMENT,
+    TIMING,
+    DARK,
+    FORMAT,
+    VERSION,
+}
+
 export const FIELD_SIZE: number = 256;
 export const FIELD_MODULO: number = 285; // 0b100011101
 
@@ -29,6 +39,7 @@ export const FORMAT_DATA_LENGTH: number = 5;
 export const FORMAT_ERROR_LENGTH: number = 10;
 export const FORMAT_GOLAY: number = 1335; // 0b10100110111
 export const FORMAT_MASK: number = 21522; // 0b101010000010010
+export const FORMAT_COMMENCE: number = 7;
 
 export const VERSION_DATA_LENGTH: number = 6;
 export const VERSION_ERROR_LENGTH: number = 12;
@@ -36,11 +47,13 @@ export const VERSION_GOLAY: number = 7973; // 0b1111100100101
 
 export const QUIET_ZONE_SIZE: number = 4;
 
+export const PADDING_DATA: number[] = [236, 17];
+
 export const ENCODING = {
-    NUMERIC: 0,
-    ALPHANUMERIC: 1,
-    BYTE: 2,
-    KANJI: 3,
+    NUMERIC: 1,
+    ALPHANUMERIC: 2,
+    BYTE: 4,
+    KANJI: 8,
     ECI: 7
 };
 

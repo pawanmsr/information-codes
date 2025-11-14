@@ -45,15 +45,15 @@ export class ErrorCorrection {
     private polynomialDivision(divisor: Uint8Array, dividend: Uint8Array): Uint8Array {
         let n: number = divisor.length;
         let m: number = dividend.length;
-        for (let i = m - 1; i >= n - 1; i--) {
+        for (let i = 0; i <= m - n; i++) {
             let quotient: number = dividend[i];
             for (let j = 0; j < n; j++) {
-                dividend[i - j] = this.arithmetic(dividend[i - j],
-                    this.multiply(quotient, divisor[n - 1 - j]));
+                dividend[i + j] = this.arithmetic(dividend[i + j],
+                    this.multiply(quotient, divisor[j]));
             }
         }
 
-        return dividend.slice(0, n - 1);
+        return dividend.slice(m - n + 1, m);
     }
     
     private polynomialProduct(x: Uint8Array, y: Uint8Array): Uint8Array {
@@ -93,7 +93,7 @@ export class ErrorCorrection {
                 multiplier <<= 1;
             }
 
-            coefficients[length + padding - i] = value;
+            coefficients[i] = value;
         }
 
         return coefficients;
@@ -103,10 +103,9 @@ export class ErrorCorrection {
         let length: number = remainder.length * BITS_IN_BYTE;
         let block: Uint8Array = new Uint8Array(length);
 
-        remainder.reverse();
         for (let i = 0; i < remainder.length; i++) {
             for (let j = 0; j < BITS_IN_BYTE; j++) {
-                block[(i + 1) * BITS_IN_BYTE - j - 1] = remainder[i] % 2;
+                block[(i + 1) * BITS_IN_BYTE - 1 - j] = remainder[i] & 1;
                 remainder[i] >>= 1;
             }
         }
@@ -116,23 +115,21 @@ export class ErrorCorrection {
 
     public encode(): Uint8Array {
         let index: number = 0;
+        let divisor: Uint8Array = this.generatorPolynomial();
 
         for (const block of this.blocks) {
-            let divisor: Uint8Array = this.generatorPolynomial();
             let dividend: Uint8Array = this.messagePolynomial(block);
             let remainder: Uint8Array = this.polynomialDivision(divisor, dividend);
 
             let errorBlock: Uint8Array = this.errorBlock(remainder);
-            for (const value of errorBlock) {
-                this.data[index] = value;
-                index++;
-            }
+            this.data.set(errorBlock, index);
+            index += errorBlock.length;
         }
 
         return this.data;
     }
 
-    public errorBlocks(): Uint8Array[] {
+    public getErrorBlocks(): Uint8Array[] {
         let index: number = 0;
         let blocks: Uint8Array[] = [];
         for (let i = 0; i < blockCount(this.version, this.level); i++) {
@@ -159,14 +156,15 @@ export class ErrorCorrection {
 
         index = 0;
         while (index < FORMAT_DATA_LENGTH) {
-            while (index < FORMAT_DATA_LENGTH && dividend[index] === 0) {
+            while (index < FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH && dividend[index] === 0) {
                 index++;
             }
 
-            for (let i: number = 0; index < FORMAT_DATA_LENGTH; i++) {
-                dividend[index] = dividend[index] ^ divisor[i];
-                index++;
+            for (let i: number = 0; index + i < FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH; i++) {
+                dividend[index + i] = this.arithmetic(dividend[index + i], divisor[i]);
             }
+
+            index++;
         }
 
         return dividend.slice(FORMAT_DATA_LENGTH, FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
@@ -187,14 +185,15 @@ export class ErrorCorrection {
 
         index = 0;
         while (index < VERSION_DATA_LENGTH) {
-            while (index < VERSION_DATA_LENGTH && dividend[index] === 0) {
+            while (index < VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH && dividend[index] === 0) {
                 index++;
             }
 
-            for (let i: number = 0; index < VERSION_DATA_LENGTH; i++) {
-                dividend[index] = dividend[index] ^ divisor[i];
-                index++;
+            for (let i: number = 0; index + i < VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH; i++) {
+                dividend[index + i] = this.arithmetic(dividend[index + i], divisor[i]);
             }
+
+            index++;
         }
 
         return dividend.slice(VERSION_DATA_LENGTH, VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
