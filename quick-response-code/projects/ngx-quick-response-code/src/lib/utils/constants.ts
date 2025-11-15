@@ -26,6 +26,8 @@ export const ERROR_CORRECTION_LEVEL = {
     H: 'H'
 };
 
+export const BYTE_END: number = 255;
+
 export const FIELD_SIZE: number = 256;
 export const FIELD_MODULO: number = 285; // 0b100011101
 
@@ -42,6 +44,8 @@ export const VERSION_GOLAY: number = 7973; // 0b1111100100101
 export const QUIET_ZONE_SIZE: number = 4;
 
 export const PADDING_DATA: number[] = [236, 17];
+
+export const VALID_HEX_LENGTH: number[] = [3, 4, 6, 8];
 
 export const ENCODING = {
     NUMERIC: 1,

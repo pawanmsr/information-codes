@@ -1,4 +1,4 @@
-import { BITS_IN_BYTE, FIELD_MODULO, FIELD_SIZE, FORMAT_DATA_LENGTH, FORMAT_ERROR_LENGTH } from "./constants";
+import { BITS_IN_BYTE, BYTE_END, FIELD_MODULO, FIELD_SIZE, FORMAT_DATA_LENGTH, FORMAT_ERROR_LENGTH } from "./constants";
 import { FORMAT_GOLAY, VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH, VERSION_GOLAY } from "./constants";
 import { blockCount, errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
 
@@ -36,7 +36,7 @@ export class ErrorCorrection {
     private multiply(x: number, y: number): number {
         let exponent: number = this.logs[x] + this.logs[y];
         if (exponent >= FIELD_SIZE) {
-            exponent %= 255;
+            exponent %= BYTE_END;
         }
 
         return this.powers[exponent];

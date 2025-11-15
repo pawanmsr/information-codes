@@ -1,5 +1,5 @@
 import { Color, Coordinate, Special } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE } from "./constants";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, BYTE_END, FORMAT_COMMENCE, FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE, VALID_HEX_LENGTH } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -451,7 +451,7 @@ export class Matrix {
                 this.matrix[this.index(i, j)] = module;
             }
         }
-        
+
         return optimalMaskPattern;
     }
 
@@ -501,7 +501,7 @@ export class Matrix {
         let map: Uint8Array = new Uint8Array(size * size * 4);
         for (let i: number = 0; i < size; i++) {
             for (let j: number = 0; j < size; j++) {
-                let values: Uint8Array = colorValues((this.get(this.index(
+                let values: Uint8Array = colorToArray((this.get(this.index(
                     Math.floor(i / this.scale) - this.quiet,
                     Math.floor(j / this.scale) - this.quiet
                 )) === 1 ? dark : light));
@@ -517,8 +517,46 @@ export class Matrix {
     }
 }
 
-export function colorValues(color: Color): Uint8Array {
-    return new Uint8Array(
-        [color.red, color.green, color.blue, color.alpha]
-    );
+export function colorToArray(color: Color): Uint8Array {
+    return new Uint8Array([
+        Math.min(BYTE_END, Math.max(0, color.red)),
+        Math.min(BYTE_END, Math.max(0, color.green)),
+        Math.min(BYTE_END, Math.max(0, color.blue)),
+        Math.min(BYTE_END, Math.max(0, color.alpha))
+    ]);
+}
+
+export function hexToColor(hex: string): Color {
+    let color: Color = {
+        red: 0,
+        green: 0,
+        blue: 0,
+        alpha: 0
+    };
+
+    hex = hex.trim().replace('#', '');
+    if (!VALID_HEX_LENGTH.includes(hex.length)) {
+        return color;
+    }
+
+    if (hex.length < 6) {
+        hex = hex.split('').flatMap(
+            code => Array.from({length: 2}, () => code)
+        ).join('');
+    }
+
+    if (hex.length == 6) {
+        hex += "FF";
+    }
+
+    let value: number = parseInt(hex, BITS_IN_BYTE * 2);
+    color.alpha = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.blue = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.green = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.red = value & BYTE_END;
+
+    return color;
 }
