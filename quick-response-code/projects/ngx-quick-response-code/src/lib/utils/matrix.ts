@@ -182,17 +182,26 @@ export class Matrix {
             return false;
         }
 
-        let index: number = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 6; j++) {
+        let index: number;
+        
+        index = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
+        for (let i: number = 0; i < 6; i++) {
+            for (let j: number = 0; j < 3; j++) {
                 this.set(data[index],
-                    this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j),
-                        Special.VERSION);
-                
-                this.set(data[index],
-                    this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)),
+                    this.index(i, this.size - 1 - POSITION_MARKER_SIZE - 3 + j),
                         Special.VERSION);
 
+                index--;
+            }
+        }
+
+        index = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
+        for (let j: number = 0; j < 6; j++) {
+            for (let i: number = 0; i < 3; i++) {
+                this.set(data[index],
+                    this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + i, j),
+                        Special.VERSION);
+                
                 index--;
             }
         }
@@ -442,7 +451,7 @@ export class Matrix {
                 this.matrix[this.index(i, j)] = module;
             }
         }
-
+        
         return optimalMaskPattern;
     }
 
