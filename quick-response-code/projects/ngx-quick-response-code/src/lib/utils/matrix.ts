@@ -7,8 +7,10 @@ export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
-    constructor(private size: number, private quiet: number) {
+    constructor(private size: number,
+        private quiet: number = QUIET_ZONE_SIZE, private scale: number = 1) {
         this.quiet = Math.max(this.quiet, QUIET_ZONE_SIZE);
+        this.scale = Math.ceil(Math.abs(this.scale));
 
         this.matrix = new Uint8Array(size * size);
         this.special = new Uint8Array(size * size);
@@ -79,7 +81,7 @@ export class Matrix {
     }
 
     public imageSize(): number {
-        return this.size + this.quiet * 2;
+        return (this.size + this.quiet * 2) * this.scale;
     }
 
     public placeFinderPattern(center: Coordinate): void {
@@ -485,14 +487,15 @@ export class Matrix {
         return merged;
     }
 
-    public getRGBAMap(light: Color, dark: Color): Uint8Array {
+    public getScaledRGBAMap(light: Color, dark: Color): Uint8Array {
         const size: number = this.imageSize();
         let map: Uint8Array = new Uint8Array(size * size * 4);
         for (let i: number = 0; i < size; i++) {
             for (let j: number = 0; j < size; j++) {
-                let values: Uint8Array = colorValues(
-                    (this.get(this.index(i - this.quiet, j - this.quiet)) === 1 ? 
-                        dark : light));
+                let values: Uint8Array = colorValues((this.get(this.index(
+                    Math.floor(i / this.scale) - this.quiet,
+                    Math.floor(j / this.scale) - this.quiet
+                )) === 1 ? dark : light));
                 
                 let k: number = (i * size + j) * 4;
                 for (const value of values) {
