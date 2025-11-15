@@ -1,4 +1,4 @@
-import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION} from './constants'
+import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION} from './constants';
 import { BLOCK_COUNT, CODEWORD_COUNT, PADDING_DATA } from './constants';
 import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACITY } from './constants';
 import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
@@ -86,7 +86,8 @@ export class Analyzer {
         return this.specification.level;
     }
 
-    public getFormatDataForMaskPatterns(patterns: number[] = [0, 1, 2, 3, 4, 5, 6, 7]): Uint8Array[] {
+    public getFormatDataForMaskPatterns(patterns: number[] = [0, 1, 2, 3, 4, 5, 6, 7]): 
+        Uint8Array[] {
         let formatBlocks: Uint8Array[] = [];
         patterns.forEach(pattern => {
             formatBlocks.push(this.getFormatData(pattern));
@@ -138,7 +139,8 @@ export class Analyzer {
         let version: number = minimumVersion;
 
         while (version <= VERSION.MAX) {
-            for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH); i >= levelIndex(minimumLevel); i--) {
+            for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH);
+                i >= levelIndex(minimumLevel); i--) {
                 let index: number = (version - 1) * VERSION_MULTIPLIER * VERSION_MULTIPLIER + 
                     i * VERSION_MULTIPLIER + encodingIndex(encoding);
                 if (CHARACTER_CAPACITY[index] < characterCount) {

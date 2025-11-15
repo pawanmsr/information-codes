@@ -1,5 +1,6 @@
 import { Color, Coordinate, Special } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, BYTE_END, FORMAT_COMMENCE, FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE, VALID_HEX_LENGTH } from "./constants";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, BYTE_END, FORMAT_COMMENCE } from "./constants";
+import { FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE, VALID_HEX_LENGTH } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -225,7 +226,8 @@ export class Matrix {
                 continue;
             }
 
-            for (let i: number = (up ? this.size - 1 : 0); (up ? i >= 0 : i < this.size); (up ? i--: i++)) {
+            for (let i: number = (up ? this.size - 1 : 0);
+                (up ? i >= 0 : i < this.size); (up ? i--: i++)) {
                 for (let k: number = 0; k < 2; k++) {
                     if (index >= data.length) {
                         break;

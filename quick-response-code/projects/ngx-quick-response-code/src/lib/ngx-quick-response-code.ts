@@ -70,7 +70,8 @@ export class QuickResponseCode implements AfterViewInit {
       correction.getBinaryError(analyzer.getFormatData(),
         FORMAT_ERROR_LENGTH, FORMAT_GOLAY)]));
 
-    context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    context.clearRect(0, 0, this.canvas.nativeElement.width,
+      this.canvas.nativeElement.height);
     this.canvas.nativeElement.height = matrix.imageSize();
     this.canvas.nativeElement.width = matrix.imageSize();
 

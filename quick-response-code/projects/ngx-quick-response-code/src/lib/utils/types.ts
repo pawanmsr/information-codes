@@ -25,4 +25,4 @@ export enum Special {
     DARK,
     FORMAT,
     VERSION,
-}
+};
