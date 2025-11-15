@@ -1,4 +1,4 @@
-import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, VERSION_MULTIPLIER } from "./constants";
+import { BITS_IN_BYTE, POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, VERSION_MULTIPLIER } from "./constants";
 import { Coordinate } from "./types";
 
 export class Markers {
@@ -20,6 +20,10 @@ export class Markers {
 
     public size(): number {
         return this.version * VERSION_MULTIPLIER + 17;
+    }
+
+    public scale(maximumSize: number = (1 << BITS_IN_BYTE)): number {
+        return Math.max(1, Math.floor(maximumSize / this.size()));
     }
 
     private distance(): number {

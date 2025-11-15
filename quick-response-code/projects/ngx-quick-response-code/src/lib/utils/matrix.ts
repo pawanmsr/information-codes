@@ -35,7 +35,7 @@ export class Matrix {
                 return (Math.floor(row / 2) + Math.floor(column / 3)) % 2 === 0;
             
             case 5:
-                return (row + column) % 2 + (row * column) % 3 === 0;
+                return (row * column) % 2 + (row * column) % 3 === 0;
             
             case 6:
                 return ((row * column) % 3 + row * column) % 2 === 0;
@@ -173,8 +173,8 @@ export class Matrix {
         }
 
         // The dark module
-        this.set(1,
-            this.index(this.size - POSITION_MARKER_SIZE - 1, POSITION_MARKER_SIZE + 1),
+        this.set(1, this.index(this.size - POSITION_MARKER_SIZE - 1,
+            POSITION_MARKER_SIZE + 1),
                 Special.DARK);
     }
 
@@ -425,8 +425,6 @@ export class Matrix {
 
     public applyOptimalMask(formatBlocks: Uint8Array[], errorBlocks: Uint8Array[]): number {
         // Find optimal mask pattern
-
-        // TODO: check mask penalty
         let minimumMaskPenalty: number = -1;
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
@@ -447,6 +445,9 @@ export class Matrix {
         }
 
         // Apply mask pattern
+        this.addFormatInformation(this.merge([formatBlocks[optimalMaskPattern],
+            errorBlocks[optimalMaskPattern]]));
+        
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 let module: number = this.maskedModule(optimalMaskPattern, i, j);

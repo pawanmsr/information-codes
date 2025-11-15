@@ -607,3 +607,10 @@ export const ERROR_CORRECTION_CODEWORDS_PER_BLOCK = [
     30, 28, 30, 30, // Version 39
     30, 28, 30, 30, // Version 40
 ];
+
+export const TESTS = [
+    "007",
+    "BOND. JAMES BOND.",
+    "'Once a King, always a King. But once a Knight is enough!' (Ian Fleming, From Russia With Love)",
+    "ありがとうございます",
+]

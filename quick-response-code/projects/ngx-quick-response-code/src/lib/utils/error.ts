@@ -148,7 +148,8 @@ export class ErrorCorrection {
     public getFormatErrorsForMaskPatterns(datas: Uint8Array[]): Uint8Array[] {
         let formatErrors: Uint8Array[] = [];
         datas.forEach(data => {
-            formatErrors.push(this.getBinaryError(data, FORMAT_ERROR_LENGTH, FORMAT_GOLAY));
+            formatErrors.push(this.getBinaryError(data,
+                FORMAT_ERROR_LENGTH, FORMAT_GOLAY));
         });
 
         return formatErrors;
