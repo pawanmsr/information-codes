@@ -1,5 +1,5 @@
-import { BITS_IN_BYTE, FIELD_MODULO, FIELD_SIZE, FORMAT_DATA_LENGTH, FORMAT_ERROR_LENGTH } from "./constants";
-import { FORMAT_GOLAY, VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH, VERSION_GOLAY } from "./constants";
+import { BITS_IN_BYTE, BYTE_END, FIELD_MODULO, FIELD_SIZE } from "./constants";
+import { FORMAT_GOLAY, FORMAT_ERROR_LENGTH } from "./constants";
 import { blockCount, errorCorrectionCodewordsPerBlock, totalErrorCorrectionCodewords } from "./tables";
 
 export class ErrorCorrection {
@@ -36,7 +36,7 @@ export class ErrorCorrection {
     private multiply(x: number, y: number): number {
         let exponent: number = this.logs[x] + this.logs[y];
         if (exponent >= FIELD_SIZE) {
-            exponent %= 255;
+            exponent %= BYTE_END;
         }
 
         return this.powers[exponent];
@@ -46,7 +46,11 @@ export class ErrorCorrection {
         let n: number = divisor.length;
         let m: number = dividend.length;
         for (let i = 0; i <= m - n; i++) {
-            let quotient: number = dividend[i];
+            const quotient: number = dividend[i];
+            if (quotient === 0) {
+                continue;
+            }
+
             for (let j = 0; j < n; j++) {
                 dividend[i + j] = this.arithmetic(dividend[i + j],
                     this.multiply(quotient, divisor[j]));
@@ -99,7 +103,7 @@ export class ErrorCorrection {
         return coefficients;
     }
 
-    private errorBlock(remainder: Uint8Array): Uint8Array {
+    private getErrorBlock(remainder: Uint8Array): Uint8Array {
         let length: number = remainder.length * BITS_IN_BYTE;
         let block: Uint8Array = new Uint8Array(length);
 
@@ -121,7 +125,7 @@ export class ErrorCorrection {
             let dividend: Uint8Array = this.messagePolynomial(block);
             let remainder: Uint8Array = this.polynomialDivision(divisor, dividend);
 
-            let errorBlock: Uint8Array = this.errorBlock(remainder);
+            let errorBlock: Uint8Array = this.getErrorBlock(remainder);
             this.data.set(errorBlock, index);
             index += errorBlock.length;
         }
@@ -141,61 +145,39 @@ export class ErrorCorrection {
         return blocks;
     }
 
-    public formatError(data: Uint8Array): Uint8Array {
-        let decimal, index: number;
-        let dividend: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
-        let divisor: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH + 1);
+    public getFormatErrorsForMaskPatterns(datas: Uint8Array[]): Uint8Array[] {
+        let formatErrors: Uint8Array[] = [];
+        datas.forEach(data => {
+            formatErrors.push(this.getBinaryError(data, FORMAT_ERROR_LENGTH, FORMAT_GOLAY));
+        });
 
-        dividend.set(data, 0);
-
-        decimal = FORMAT_GOLAY;
-        for (let i: number = FORMAT_ERROR_LENGTH; i >= 0; i--) {
-            divisor[i] = decimal & 1;
-            decimal >>= 1;
-        }
-
-        index = 0;
-        while (index < FORMAT_DATA_LENGTH) {
-            while (index < FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH && dividend[index] === 0) {
-                index++;
-            }
-
-            for (let i: number = 0; index + i < FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH; i++) {
-                dividend[index + i] = this.arithmetic(dividend[index + i], divisor[i]);
-            }
-
-            index++;
-        }
-
-        return dividend.slice(FORMAT_DATA_LENGTH, FORMAT_DATA_LENGTH + FORMAT_ERROR_LENGTH);
+        return formatErrors;
     }
 
-    public versionError(data: Uint8Array): Uint8Array {
-        let decimal, index: number;
-        let dividend: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
-        let divisor: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH + 1);
+    public getBinaryError(data: Uint8Array, errorLength: number, golay: number): Uint8Array {
+        let dataLength: number = data.length;
+        
+        let dividend: Uint8Array = new Uint8Array(dataLength + errorLength);
+        let divisor: Uint8Array = new Uint8Array(errorLength + 1);
         
         dividend.set(data, 0);
 
-        decimal = VERSION_GOLAY;
-        for (let i: number = VERSION_ERROR_LENGTH; i >= 0; i--) {
+        let decimal: number = golay;
+        for (let i: number = errorLength; i >= 0; i--) {
             divisor[i] = decimal & 1;
             decimal >>= 1;
         }
 
-        index = 0;
-        while (index < VERSION_DATA_LENGTH) {
-            while (index < VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH && dividend[index] === 0) {
-                index++;
+        for (let i: number = 0; i < dataLength; i++) {
+            if (dividend[i] === 0) {
+                continue;
             }
 
-            for (let i: number = 0; index + i < VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH; i++) {
-                dividend[index + i] = this.arithmetic(dividend[index + i], divisor[i]);
+            for (let j: number = 0; j <= errorLength; j++) {
+                dividend[i + j] = this.arithmetic(dividend[i + j], divisor[j]);
             }
-
-            index++;
         }
 
-        return dividend.slice(VERSION_DATA_LENGTH, VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH);
+        return dividend.slice(dataLength, dataLength + errorLength);
     }
 }

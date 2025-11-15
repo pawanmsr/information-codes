@@ -1,4 +1,4 @@
-import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION} from './constants'
+import { ALPHANUMERIC_GROUP_SIZE, ALPHANUMERIC_MULTIPLIER, ALPHANUMERIC_REGULAR_EXPRESSION} from './constants';
 import { BLOCK_COUNT, CODEWORD_COUNT, PADDING_DATA } from './constants';
 import { BITS_IN_BYTE, BITS_IN_KANJI, BYTE_REGULAR_EXPRESSION, CHARACTER_CAPACITY } from './constants';
 import { ENCODING, ERROR_CORRECTION_LEVEL, FORMAT_DATA_LENGTH, KANJI_KANA_REGULAR_EXPRESSION } from './constants';
@@ -10,16 +10,10 @@ import { Specification } from './types';
 
 export class Analyzer {
     private specification: Specification;
-
     private data: Uint8Array;
-    private formatData: Uint8Array;
-    private versionData: Uint8Array;
 
     constructor(private text: string) {
         this.specification = this.optimalSpecification();
-
-        this.versionData = new Uint8Array(VERSION_DATA_LENGTH);
-        this.formatData = new Uint8Array(FORMAT_DATA_LENGTH);
 
         let count: number = totalDataCodewords(this.specification.version,
             this.specification.level);
@@ -78,48 +72,58 @@ export class Analyzer {
     }
 
     public getVersionData(): Uint8Array {
+        let data: Uint8Array = new Uint8Array(VERSION_DATA_LENGTH);
         let version: number = this.specification.version;
         for (let i: number = VERSION_DATA_LENGTH - 1; i >= 0; i--) {
-            this.versionData[i] = version & 1;
+            data[i] = version & 1;
             version >>= 1;
         }
 
-        return this.versionData;
+        return data;
     }
 
     public getLevel(): number {
         return this.specification.level;
     }
 
-    public setMaskPattern(pattern: number): boolean {
-        let decimal: number;
+    public getFormatDataForMaskPatterns(patterns: number[] = [0, 1, 2, 3, 4, 5, 6, 7]): 
+        Uint8Array[] {
+        let formatBlocks: Uint8Array[] = [];
+        patterns.forEach(pattern => {
+            formatBlocks.push(this.getFormatData(pattern));
+        });
+
+        return formatBlocks;
+    }
+
+    public setMaskPattern(pattern: number): void {
         this.specification.pattern = pattern;
+    }
+
+    public getFormatData(pattern: number = -1): Uint8Array {
+        let decimal: number = pattern;
+        let data: Uint8Array = new Uint8Array(FORMAT_DATA_LENGTH);
+
+        if (decimal < 0) {
+            decimal = this.specification.pattern;
+        }
+
+        if (decimal < 0) {
+            return data;
+        }
+
+        for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
+            data[i] = decimal & 1;
+            decimal >>= 1;
+        }
 
         decimal = this.specification.level;
         for (let i: number = 1; i >= 0; i--) {
-            this.formatData[i] = decimal & 1;
+            data[i] = decimal & 1;
             decimal >>= 1;
         }
 
-        if (decimal !== 0) {
-            return false;
-        }
-
-        decimal = this.specification.pattern;
-        for (let i: number = FORMAT_DATA_LENGTH - 1; i > 1; i--) {
-            this.formatData[i] = decimal & 1;
-            decimal >>= 1;
-        }
-
-        if (decimal !== 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public getFormatData(): Uint8Array {
-        return this.formatData;
+        return data;
     }
 
     public setMinimumVersionAndLevel(version: number, level: number): Specification {
@@ -135,8 +139,10 @@ export class Analyzer {
         let version: number = minimumVersion;
 
         while (version <= VERSION.MAX) {
-            for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH); i >= levelIndex(minimumLevel); i--) {
-                let index: number = (version - 1 + i) * VERSION_MULTIPLIER + encodingIndex(encoding);
+            for (let i = levelIndex(ERROR_CORRECTION_LEVEL.HIGH);
+                i >= levelIndex(minimumLevel); i--) {
+                let index: number = (version - 1) * VERSION_MULTIPLIER * VERSION_MULTIPLIER + 
+                    i * VERSION_MULTIPLIER + encodingIndex(encoding);
                 if (CHARACTER_CAPACITY[index] < characterCount) {
                     continue;
                 }
@@ -274,6 +280,10 @@ export class Analyzer {
             i ^= 1;
         }
 
+        return this.data;
+    }
+
+    public getEncodedData(): Uint8Array {
         return this.data;
     }
 

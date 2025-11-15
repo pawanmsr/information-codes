@@ -1,5 +1,6 @@
 import { Color, Coordinate, Special } from "./types";
-import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, FORMAT_COMMENCE, PENALTY, QUIET_ZONE_SIZE } from "./constants";
+import { ALIGNMENT_PATTERN_CENTER, BITS_IN_BYTE, BYTE_END, FORMAT_COMMENCE } from "./constants";
+import { FORMAT_MASK, PENALTY, QUIET_ZONE_SIZE, VALID_HEX_LENGTH } from "./constants";
 import { POSITION_MARKER_CENTER, POSITION_MARKER_SIZE, SIMILARITY_PATTERN } from "./constants";
 import { VERSION_DATA_LENGTH, VERSION_ERROR_LENGTH } from "./constants";
 
@@ -7,8 +8,10 @@ export class Matrix {
     private matrix: Uint8Array;
     private special: Uint8Array;
     
-    constructor(private size: number, private quiet: number) {
+    constructor(private size: number,
+        private quiet: number = QUIET_ZONE_SIZE, private scale: number = 1) {
         this.quiet = Math.max(this.quiet, QUIET_ZONE_SIZE);
+        this.scale = Math.ceil(Math.abs(this.scale));
 
         this.matrix = new Uint8Array(size * size);
         this.special = new Uint8Array(size * size);
@@ -18,28 +21,27 @@ export class Matrix {
         switch (pattern) {
             case 0:
                 return (row + column) % 2 === 0;
-                break;
+            
             case 1:
                 return row % 2 === 0;
-                break;
+            
             case 2:
                 return column % 3 === 0;
-                break;
+            
             case 3:
                 return (row + column) % 3 === 0;
-                break;
+            
             case 4:
                 return (Math.floor(row / 2) + Math.floor(column / 3)) % 2 === 0;
-                break;
+            
             case 5:
                 return (row + column) % 2 + (row * column) % 3 === 0;
-                break;
+            
             case 6:
                 return ((row * column) % 3 + row * column) % 2 === 0;
-                break;
+            
             case 7:
                 return ((row * column) % 3 + row + column) % 2 === 0;
-                break;
         
             default:
                 break;
@@ -80,7 +82,7 @@ export class Matrix {
     }
 
     public imageSize(): number {
-        return this.size + this.quiet * 2;
+        return (this.size + this.quiet * 2) * this.scale;
     }
 
     public placeFinderPattern(center: Coordinate): void {
@@ -130,6 +132,12 @@ export class Matrix {
     }
 
     public addFormatInformation(data: Uint8Array): void {
+        let decimal: number = FORMAT_MASK;
+        for (let i: number = data.length - 1; i >= 0; i--) {
+            data[i] ^= decimal & 1;
+            decimal >>= 1;
+        }
+
         let i: number = 0;
         for (let k = 0; k <= POSITION_MARKER_SIZE + 1; k++) {
             if (this.set(data[i],
@@ -175,17 +183,26 @@ export class Matrix {
             return false;
         }
 
-        let index: number = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 6; j++) {
+        let index: number;
+        
+        index = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
+        for (let i: number = 0; i < 6; i++) {
+            for (let j: number = 0; j < 3; j++) {
                 this.set(data[index],
-                    this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3), j),
-                        Special.VERSION);
-                
-                this.set(data[index],
-                    this.index(j, this.size - 1 - POSITION_MARKER_SIZE - 3 + (i % 3)),
+                    this.index(i, this.size - 1 - POSITION_MARKER_SIZE - 3 + j),
                         Special.VERSION);
 
+                index--;
+            }
+        }
+
+        index = VERSION_DATA_LENGTH + VERSION_ERROR_LENGTH - 1;
+        for (let j: number = 0; j < 6; j++) {
+            for (let i: number = 0; i < 3; i++) {
+                this.set(data[index],
+                    this.index(this.size - 1 - POSITION_MARKER_SIZE - 3 + i, j),
+                        Special.VERSION);
+                
                 index--;
             }
         }
@@ -209,7 +226,8 @@ export class Matrix {
                 continue;
             }
 
-            for (let i: number = (up ? this.size - 1 : 0); (up ? i >= 0 : i < this.size); (up ? i--: i++)) {
+            for (let i: number = (up ? this.size - 1 : 0);
+                (up ? i >= 0 : i < this.size); (up ? i--: i++)) {
                 for (let k: number = 0; k < 2; k++) {
                     if (index >= data.length) {
                         break;
@@ -227,11 +245,10 @@ export class Matrix {
     }
 
     private maskedModule(pattern: number, row: number, column: number): number {
-        let module: number = this.matrix[this.index(row, column)] ^ 
-            (this.special[this.index(row, column)] === 0 && 
-                this.condition(pattern, row, column) ? 1 : 0);
-
-        return module;
+        let i: number = this.index(row, column);
+        return this.matrix[i] ^ (this.special[i] === 0 && 
+            this.condition(pattern, row, column) ?
+                1 : 0);
     }
 
     private consecutiveFivePenalty(pattern: number): number {
@@ -338,6 +355,10 @@ export class Matrix {
                         j + SIMILARITY_PATTERN.length - 1 - k);
                     match &&= module === SIMILARITY_PATTERN[k];
                 }
+
+                if (match) {
+                    penalty += PENALTY.FINDER_PATTERN_SIMILARITY;
+                }
             }
         }
 
@@ -394,18 +415,25 @@ export class Matrix {
             }
         }
 
-        let multiplier: number = Math.ceil(darks * 100 / (this.size * this.size * 5));
-        let penalty: number = Math.min(multiplier, 10 - multiplier) * PENALTY.UNEVEN_RATIO;
+        let value: number = darks * 100 / (this.size * this.size * 5);
+        let penalty: number = Math.min(Math.ceil(value), Math.abs(10 - Math.ceil(value)),
+            Math.floor(value), Math.abs(10 - Math.floor(value))) * 
+                PENALTY.UNEVEN_RATIO;
 
         return penalty;
     }
 
-    public applyMask(): number {
+    public applyOptimalMask(formatBlocks: Uint8Array[], errorBlocks: Uint8Array[]): number {
         // Find optimal mask pattern
+
+        // TODO: check mask penalty
         let minimumMaskPenalty: number = -1;
         let optimalMaskPattern: number = -1;
         for (let pattern: number = 0; pattern < BITS_IN_BYTE; pattern++) {
             let penalty: number = 0;
+
+            this.addFormatInformation(this.merge([formatBlocks[pattern],
+                errorBlocks[pattern]]));
             
             penalty += this.consecutiveFivePenalty(pattern);
             penalty += this.sameTwoCrossTwoPenalty(pattern);
@@ -470,14 +498,15 @@ export class Matrix {
         return merged;
     }
 
-    public generateRGBAMap(light: Color, dark: Color): Uint8Array {
+    public getScaledRGBAMap(light: Color, dark: Color): Uint8Array {
         const size: number = this.imageSize();
         let map: Uint8Array = new Uint8Array(size * size * 4);
         for (let i: number = 0; i < size; i++) {
             for (let j: number = 0; j < size; j++) {
-                let values: Uint8Array = colorValues(
-                    (this.get(this.index(i - this.quiet, j - this.quiet)) === 1 ? 
-                        dark : light));
+                let values: Uint8Array = colorToArray((this.get(this.index(
+                    Math.floor(i / this.scale) - this.quiet,
+                    Math.floor(j / this.scale) - this.quiet
+                )) === 1 ? dark : light));
                 
                 let k: number = (i * size + j) * 4;
                 for (const value of values) {
@@ -490,8 +519,46 @@ export class Matrix {
     }
 }
 
-export function colorValues(color: Color): Uint8Array {
-    return new Uint8Array(
-        [color.red, color.green, color.blue, color.alpha]
-    );
+export function colorToArray(color: Color): Uint8Array {
+    return new Uint8Array([
+        Math.min(BYTE_END, Math.max(0, color.red)),
+        Math.min(BYTE_END, Math.max(0, color.green)),
+        Math.min(BYTE_END, Math.max(0, color.blue)),
+        Math.min(BYTE_END, Math.max(0, color.alpha))
+    ]);
+}
+
+export function hexToColor(hex: string): Color {
+    let color: Color = {
+        red: 0,
+        green: 0,
+        blue: 0,
+        alpha: 0
+    };
+
+    hex = hex.trim().replace('#', '');
+    if (!VALID_HEX_LENGTH.includes(hex.length)) {
+        return color;
+    }
+
+    if (hex.length < 6) {
+        hex = hex.split('').flatMap(
+            code => Array.from({length: 2}, () => code)
+        ).join('');
+    }
+
+    if (hex.length == 6) {
+        hex += "FF";
+    }
+
+    let value: number = parseInt(hex, BITS_IN_BYTE * 2);
+    color.alpha = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.blue = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.green = value & BYTE_END;
+    value >>= BITS_IN_BYTE;
+    color.red = value & BYTE_END;
+
+    return color;
 }
