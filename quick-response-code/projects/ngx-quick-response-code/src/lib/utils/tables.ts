@@ -1,10 +1,6 @@
 import { BLOCK_COUNT, CHARACTER_COUNT, CODEWORD_COUNT, ENCODING, ERROR_CORRECTION_LEVEL } from './constants';
 import { ERROR_CORRECTION_CODEWORDS_PER_BLOCK, VERSION_MULTIPLIER } from './constants';
 
-interface Dictionary {
-    [key: string]: number
-}
-
 export function tableIndex(version: number, level: number): number {
     return (version - 1) * VERSION_MULTIPLIER + levelIndex(level);
 }
@@ -147,7 +143,7 @@ export function totalErrorCorrectionCodewords(version: number, level: number): n
 
 
 // Look Up Tables //
-export const ALPHANUMERIC_TABLE: Dictionary = {
+export const ALPHANUMERIC_TABLE: Record<string, number> = {
     "0": 0,
     "1": 1,
     "2": 2,
@@ -195,7 +191,7 @@ export const ALPHANUMERIC_TABLE: Dictionary = {
     ":": 44
 };
 
-export const KANJI_TABLE: Dictionary = {
+export const KANJI_TABLE: Record<string, number> = {
     "　、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃仝々〆〇ー―‐／＼～∥｜…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】＋－±×÷＝≠＜＞≦≧∞∴♂♀°′″℃￥＄￠￡％＃＆＊＠§☆★○●◎◇": 33088,
     "◆□■△▲▽▼※〒→←↑↓〓": 33183,
     "∈∋⊆⊇⊂⊃∪∩": 33208,

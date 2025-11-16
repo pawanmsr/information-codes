@@ -1,24 +1,26 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
+import { ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
 import { Markers } from './utils/markers';
 import { Analyzer } from './utils/analyzer';
 import { ErrorCorrection } from './utils/error';
 import { hexToColor, Matrix } from './utils/matrix';
-import { ERROR_CORRECTION_LEVEL, FORMAT_ERROR_LENGTH, FORMAT_GOLAY } from './utils/constants';
-import { QUIET_ZONE_SIZE, VERSION, VERSION_ERROR_LENGTH, VERSION_GOLAY } from './utils/constants';
+import { BITS_IN_BYTE, ERROR_CORRECTION_LEVEL, FORMAT_ERROR_LENGTH, FORMAT_GOLAY } from './utils/constants';
+import { TESTS, QUIET_ZONE_SIZE, VERSION, VERSION_ERROR_LENGTH, VERSION_GOLAY } from './utils/constants';
 import { identifierLevel } from './utils/tables';
 
 @Component({
   selector: 'ngx-quick-response-code',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #code></canvas>`,
   styles: ``,
 })
-export class QuickResponseCode implements AfterViewInit {
-  @Input() scale: number = 4;
-  @Input() text: string = "NGX QUICK RESPONSE CODE";
+export class QuickResponseCode implements AfterViewInit, OnChanges {
+  @Input() text: string = TESTS[1].TEXT;
   @Input() quietZoneSize: number = QUIET_ZONE_SIZE;
   @Input() minimumVersion: number = VERSION.MIN;
   @Input() minimumErrorLevel: string = ERROR_CORRECTION_LEVEL.L;
+  @Input() maximumSize: number = 1 << BITS_IN_BYTE;
   @Input() lightColor: string = "#FFFFFFFF";
   @Input() darkColor: string = "#000000FF";
 
@@ -38,8 +40,9 @@ export class QuickResponseCode implements AfterViewInit {
     let correction: ErrorCorrection = new ErrorCorrection(
       analyzer.getVersion(), analyzer.getLevel(), analyzer.getBlocks());
     
+    // Matrix methods must be applied in order.
     let matrix: Matrix = new Matrix(markers.size(),
-      this.quietZoneSize, this.scale);
+      this.quietZoneSize, markers.scale(this.maximumSize));
 
     markers.finderPatterns().forEach(center => {
       matrix.placeFinderPattern(center)
@@ -65,11 +68,8 @@ export class QuickResponseCode implements AfterViewInit {
     
     analyzer.setMaskPattern(matrix.applyOptimalMask(analyzer.getFormatDataForMaskPatterns(),
       correction.getFormatErrorsForMaskPatterns(analyzer.getFormatDataForMaskPatterns())));
-    
-    matrix.addFormatInformation(matrix.merge([analyzer.getFormatData(),
-      correction.getBinaryError(analyzer.getFormatData(),
-        FORMAT_ERROR_LENGTH, FORMAT_GOLAY)]));
 
+    // Draw image
     context.clearRect(0, 0, this.canvas.nativeElement.width,
       this.canvas.nativeElement.height);
     this.canvas.nativeElement.height = matrix.imageSize();
@@ -79,15 +79,38 @@ export class QuickResponseCode implements AfterViewInit {
     data.set(matrix.getScaledRGBAMap(hexToColor(this.lightColor),
       hexToColor(this.darkColor)), 0);
 
-    let newImage = new ImageData(data,
+    let image = new ImageData(data,
       matrix.imageSize(), matrix.imageSize());
-    context.putImageData(newImage, 0, 0);
+    context.putImageData(image, 0, 0);
+  }
+
+  private load(context: CanvasRenderingContext2D): void {
+    context.clearRect(0, 0, this.canvas.nativeElement.width,
+      this.canvas.nativeElement.height);
+    context.fillText(". . .", this.canvas.nativeElement.width / 2,
+      this.canvas.nativeElement.height / 2);
   }
 
   ngAfterViewInit(): void {
     let context = this.canvas.nativeElement.getContext('2d');
-    if (context) {
-      this.draw(context);
+    if (!context) {
+      return ;
     }
+
+    this.draw(context);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.canvas) {
+      return ;
+    }
+
+    let context = this.canvas.nativeElement.getContext('2d');
+    if (!context) {
+      return ;
+    }
+
+    this.load(context);
+    this.draw(context);
   }
 }

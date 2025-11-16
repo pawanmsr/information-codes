@@ -1,21 +1,21 @@
-export type Coordinate = {
+export interface Coordinate {
     x: number;
     y: number;
-};
+}
 
-export type Specification = {
+export interface Specification {
     encoding: number;
     version: number;
     level: number;
     pattern: number;
-};
+}
 
-export type Color = {
+export interface Color {
     red: number;
     green: number;
     blue: number;
     alpha: number;
-};
+}
 
 export enum Special {
     DATA = 0,

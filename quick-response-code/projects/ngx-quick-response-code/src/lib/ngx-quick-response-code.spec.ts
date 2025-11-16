@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection, SimpleChanges, SimpleChange } from '@angular/core';
 
 import { QuickResponseCode } from './ngx-quick-response-code';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { TESTS } from './utils/constants';
+
 
 describe('NgxQuickResponseCode', () => {
   let component: QuickResponseCode;
@@ -11,8 +13,7 @@ describe('NgxQuickResponseCode', () => {
     await TestBed.configureTestingModule({
       imports: [QuickResponseCode],
       providers: [provideZonelessChangeDetection()]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(QuickResponseCode);
     component = fixture.componentInstance;
@@ -21,5 +22,18 @@ describe('NgxQuickResponseCode', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  TESTS.forEach(CASE => {
+    it('should match image size', () => {
+      let change: SimpleChanges = {
+        "text": new SimpleChange(component.text, CASE.TEXT, false)
+      }; // TODO: find a better way.
+      
+      component.text = CASE.TEXT;
+      component.ngOnChanges(change);
+
+      expect(component.canvas.nativeElement.height).toEqual(CASE.SIZE);
+    });
   });
 });
