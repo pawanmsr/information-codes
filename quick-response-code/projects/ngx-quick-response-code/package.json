@@ -1,6 +1,6 @@
 {
   "name": "ngx-quick-response-code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Third party library for generating quick response code inside angular applications.",
   "keywords": [
     "qr"
