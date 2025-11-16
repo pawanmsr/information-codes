@@ -608,9 +608,23 @@ export const ERROR_CORRECTION_CODEWORDS_PER_BLOCK = [
     30, 28, 30, 30, // Version 40
 ];
 
+const IMAGE_SIZES = [348, 330, 296, 287, 270];
+
 export const TESTS = [
-    "007",
-    "BOND. JAMES BOND.",
-    "'Once a King, always a King. But once a Knight is enough!' (Ian Fleming, From Russia With Love)",
-    "ありがとうございます",
+    {
+        TEXT: "007",
+        SIZE: IMAGE_SIZES[0]
+    },
+    {
+        TEXT: "MR . . . BOND. JAMES BOND.",
+        SIZE: IMAGE_SIZES[1]
+    },
+    {
+        TEXT: "'Once a King, always a King. But once a Knight is enough!' (Ian Fleming, From Russia With Love)",
+        SIZE: IMAGE_SIZES[4]
+    },
+    {
+        TEXT: "ありがとうございます",
+        SIZE: IMAGE_SIZES[0]
+    }
 ]

@@ -16,7 +16,7 @@ import { identifierLevel } from './utils/tables';
   styles: ``,
 })
 export class QuickResponseCode implements AfterViewInit, OnChanges {
-  @Input() text: string = TESTS[0];
+  @Input() text: string = TESTS[1].TEXT;
   @Input() quietZoneSize: number = QUIET_ZONE_SIZE;
   @Input() minimumVersion: number = VERSION.MIN;
   @Input() minimumErrorLevel: string = ERROR_CORRECTION_LEVEL.L;
@@ -79,23 +79,38 @@ export class QuickResponseCode implements AfterViewInit, OnChanges {
     data.set(matrix.getScaledRGBAMap(hexToColor(this.lightColor),
       hexToColor(this.darkColor)), 0);
 
-    let newImage = new ImageData(data,
+    let image = new ImageData(data,
       matrix.imageSize(), matrix.imageSize());
-    context.putImageData(newImage, 0, 0);
+    context.putImageData(image, 0, 0);
+  }
+
+  private load(context: CanvasRenderingContext2D): void {
+    context.clearRect(0, 0, this.canvas.nativeElement.width,
+      this.canvas.nativeElement.height);
+    context.fillText(". . .", this.canvas.nativeElement.width / 2,
+      this.canvas.nativeElement.height / 2);
   }
 
   ngAfterViewInit(): void {
     let context = this.canvas.nativeElement.getContext('2d');
-    if (context) {
-      this.draw(context);
+    if (!context) {
+      return ;
     }
+
+    this.draw(context);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    let context = this.canvas.nativeElement.getContext('2d');
-    if (context) {
-      // TODO: loading.
-      this.draw(context);
+    if (!this.canvas) {
+      return ;
     }
+
+    let context = this.canvas.nativeElement.getContext('2d');
+    if (!context) {
+      return ;
+    }
+
+    this.load(context);
+    this.draw(context);
   }
 }
