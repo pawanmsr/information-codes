@@ -2,6 +2,50 @@
 
 Standalone library for generating quick response code in Angular applications.
 
+![007](https://i.ibb.co/cXLkhg3t/quick-response-code.png)
+
+## Instruction
+
+```shell
+# install using npm
+npm i ngx-quick-response-code --save
+
+```
+
+```typescript
+// import in some.module.ts
+
+import { QuickResponseCode } from 'ngx-quick-response-code';
+
+@NgModule([
+   imports: [
+      . . .,
+      QuickResponseCode,
+      . . .
+   ]
+])
+class SomeModule {}
+
+```
+
+```html
+<!-- some.page.html -->
+
+<ngx-quick-response-code text="everybody@awesome.com" />
+
+<!-- full options list-->>
+<ngx-quick-response-code
+   text="{{ uri }}"
+   quietZoneSize="{{ frameSize }}"
+   minimumVersion="{{ version }}"
+   minimumErrorLevel="{{ 'L' | 'M' | 'Q' | 'H' }}"
+   maximumSize="{{ size }}"
+   lightColor="#f4f1de"
+   darkColor="#540b0e">
+</ngx-quick-response-code>
+
+```
+
 ## Structure
 
 Identification, alignment, encoding, data and error.
@@ -16,7 +60,7 @@ Module is the smallest unit in a quick response code. They are non-zero fixed si
 
 ### Position
 
-$$7 \times 7$$ squares at the top left, top right, and bottom left corners surrounded by empty modules on the inward-side called **Separator**. They are called **Finder Patterns** or **Position Markers**. They are used to locate and determine rotational orientation.
+$7 \times 7$ squares at the top left, top right, and bottom left corners surrounded by empty modules on the inward-side called **Separator**. They are called **Finder Patterns** or **Position Markers**. They are used to locate and determine rotational orientation.
 
 ### Alignment
 
@@ -58,6 +102,8 @@ Reed Solomon Algorithm
 | Quartile  | 25%           |
 | High      | 30%           |
 
+Format and Version use Golay Algorithm (binary variant) for error correction.
+
 ### Masking
 
 Mask pattern is chosen to balance the ratio of dark to light modules, minimize consecutive modules of same colour, and distinguish data modules from fixed patterns such as alignment pattern and position markers.
@@ -91,7 +137,7 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 - [Ngx-Quick-Response-Code](projects/ngx-quick-response-code/README.md): Display for Angular Applications.
 
-### Arigato
+### Arigatou
 
-- Development and Popularization of QR Code. 2019. Hara, Masahiro. Denso Wave.
+- Development and Popularization of QR Code. 2019. Hara, Masahiro. Denso Wave.  
 - [QR Code](https://www.qrcode.com/)

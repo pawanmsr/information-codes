@@ -1,8 +1,25 @@
 # Quick Response Code
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.0.
+Workspace for quick response code generation, scanning and related libraries.
 
-## Code scaffolding
+## NGX Quick Response Code
+
+See [README](/quick-response-code/projects/ngx-quick-response-code/README.md) for more information.
+
+## Quick Response Decoder
+
+TODO: CPP/JAVA
+
+1. Scan field of view to detect finder patterns.
+2. Align image with help of alignment pattern(s).
+3. Translate modules into codewords.
+4. Decipher.
+
+## Development
+
+This workspace was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.0.
+
+### Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
@@ -18,7 +35,7 @@ ng generate --help
 
 ```
 
-## Building
+### Building
 
 To build the library, run:
 
@@ -29,7 +46,7 @@ ng build ngx-quick-response-code
 
 This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
 
-### Publishing the Library
+#### Publishing the Library
 
 Once the project is built, you can publish your library by following these steps:
 
@@ -47,7 +64,7 @@ Once the project is built, you can publish your library by following these steps
 
    ```
 
-## Running unit tests
+### Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
@@ -56,7 +73,7 @@ ng test
 
 ```
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 For end-to-end (e2e) testing, run:
 
