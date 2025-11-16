@@ -1,7 +1,7 @@
 import { KANJI_TABLE } from "./tables";
 
 export class KanjiEncoder {
-    private kanjiTable: {[key: string]: number} = {}
+    private kanjiTable: Record<string, number>= {}
     
     constructor() {
         for (const key in KANJI_TABLE) {
