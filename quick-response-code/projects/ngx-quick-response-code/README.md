@@ -119,25 +119,8 @@ Mask pattern is chosen to balance the ratio of dark to light modules, minimize c
 | 110       | $$ ((i * j) \% 3 + i * j) \% 2 = 0 $$     |
 | 111       | $$ ((i * j) \% 3 + i + j) \% 2 = 0 $$     |
 
-## Development
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.1.
-
-### Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-### Projects
-
-- [Ngx-Quick-Response-Code](projects/ngx-quick-response-code/README.md): Display for Angular Applications.
-
-### Arigatou
+## Arigatou
 
 - Development and Popularization of QR Code. 2019. Hara, Masahiro. Denso Wave.  
 - [QR Code](https://www.qrcode.com/)

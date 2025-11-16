@@ -19,22 +19,6 @@ TODO: CPP/JAVA
 
 This workspace was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.0.
 
-### Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-
-```
-
 ### Building
 
 To build the library, run:
@@ -52,17 +36,17 @@ Once the project is built, you can publish your library by following these steps
 
 1. Navigate to the `dist` directory:
 
-   ```bash
-   cd dist/ngx-quick-response-code
+```bash
+cd dist/ngx-quick-response-code
 
-   ```
+```
 
 2. Run the `npm publish` command to publish your library to the npm registry:
 
-   ```bash
-   npm publish
+```bash
+npm publish
 
-   ```
+```
 
 ### Running unit tests
 
