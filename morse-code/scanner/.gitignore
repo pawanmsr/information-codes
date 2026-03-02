@@ -1,0 +1,13 @@
+*antlr*
+
+# Test languages
+*test*
+
+# Package manager
+*.lock
+
+# Environment
+env
+.env
+.venv
+venv
