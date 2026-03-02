@@ -23,8 +23,11 @@
 hs_err_pid*
 replay_pid*
 
-# Test languages
-*.txt*
+# Antlr directory
+.antlr/*
+
+# Test documents
+*.txt
 
 # Package manager
 *.lock
