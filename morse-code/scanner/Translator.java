@@ -8,7 +8,6 @@ import java.util.Map;
 public class Translator extends MorseBaseListener {
     private StringBuilder message = new StringBuilder();
     private StringBuilder word = new StringBuilder();
-    private StringBuilder character = new StringBuilder();
 
     private static final Map<String, String> ENGLISH = new HashMap<String, String>();
     
@@ -224,28 +223,18 @@ public class Translator extends MorseBaseListener {
         ENGLISH.put(".--.-.", "@");
         ENGLISH.put("dit dah dah dit dah dit", "@");
         ENGLISH.put("beep boop boop beep boop beep", "@");
-
-        // TODO: fill sequentially
-        // TODO: alphabet, digits, punctuations
-    }
-
-    @Override public void exitSignal(MorseParser.SignalContext ctx) {
-        character.append(ctx.getText());
     }
 
     @Override public void exitCharacter(MorseParser.CharacterContext ctx) {
         // lower case for unknown and uppercase otherwise
-        System.out.println(character.toString());
-        word.append(ENGLISH.getOrDefault(character.toString(), "<unk>"));
-        character.setLength(0);
+        word.append(ENGLISH.getOrDefault(ctx.getText(), "<unk>"));
     }
 
     @Override public void exitWord(MorseParser.WordContext ctx) {
-        if (word.length() > 0) {
-            message.append(' ');
-        }
-
         message.append(word.toString());
+        if (word.length() > 0)
+            message.append(' ');
+        
         word.setLength(0);
     }
 
