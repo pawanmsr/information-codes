@@ -7,8 +7,8 @@ message: word (WORD_SEPARATOR word)* EOF;
 word: character (CHARACTER_SEPARATOR character)* ;
 character
     : short+
-    | long (SYMBOL_SEPARATOR long)+
-    | happy (SYMBOL_SEPARATOR happy)+ ;
+    | long (SYMBOL_SEPARATOR long)*
+    | happy (SYMBOL_SEPARATOR happy)* ;
 
 // International Morse Code
 // TODO: Verify with in-order traversal
