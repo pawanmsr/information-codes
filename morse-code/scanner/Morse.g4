@@ -184,10 +184,12 @@ happy
     |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 0
     ;
 
-signals
-    : small+
-    | big+
-    | huge+
+signals : signal+ ;
+
+signal
+    : small
+    | big
+    | huge
     ;
 
 small
