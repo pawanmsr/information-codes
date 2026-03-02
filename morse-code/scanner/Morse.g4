@@ -12,7 +12,7 @@ character
     ;
 
 // International Morse Code
-// TODO: Verify with in-order traversal
+// TODO: verify with in-order traversal
 short
     : DOT DOT DOT DOT DOT           // 5
     | DOT DOT DOT DOT               // H
@@ -128,60 +128,60 @@ long
     ;
 
 happy
-    :  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                 // 5
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                                        // H
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                 // 4
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                                                               // S
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                        // V
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 3
-    |  BEEP SYMBOL_SEPARATOR  BEEP                                                                                                      // I
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                                        // F
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                                               // U
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP          // Question mark (?)
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP          // Underscore (_)
-    |  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 2
-    |  BEEP                                                                                                                             // E
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                 // Ampersand (&)
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                                        // L
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP          // Quote (")
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                                                               // R
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP          // Period (.)
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                 // Plus (+)
-    |  BEEP SYMBOL_SEPARATOR  BOOP                                                                                                      // A
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP          // At sign (@)
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                                        // P
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                                                               // W
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP          // Apostrophe (')
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 1
-    |  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                                        // J
+    :  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                         // 5
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                                               // H
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                         // 4
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                                                                     // S
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                               // V
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                         // 3
+    |  BEEP SYMBOL_SEPARATOR BEEP                                                                                           // I
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                                               // F
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                                                     // U
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP   // Question mark (?)
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP   // Underscore (_)
+    |  BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                         // 2
+    |  BEEP                                                                                                                 // E
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                         // Ampersand (&)
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                                               // L
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP   // Quote (")
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                                                                     // R
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP   // Period (.)
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                         // Plus (+)
+    |  BEEP SYMBOL_SEPARATOR BOOP                                                                                           // A
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP   // At sign (@)
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                                               // P
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                                                                     // W
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP   // Apostrophe (')
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                         // 1
+    |  BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                                               // J
 
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP          // Hyphen (-)
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                 // 6
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                                        // B
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                 // Equal (=)
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                                                               // D
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                 // Slash (/)
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                        // X
-    |  BOOP SYMBOL_SEPARATOR  BEEP                                                                                                      // N
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                                        // C
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP          // Semicolon (;)
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP          // Exclamation (!)
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                                               // K
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP          // Parenthesis )
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                 // Parenthesis (
-    |  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                                        // Y
-    |  BOOP                                                                                                                             // T
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                 // 7
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                        // Z
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP          // Comma (,)
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                                                               // G
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BOOP                                                        // Q
-    |  BOOP SYMBOL_SEPARATOR  BOOP                                                                                                      // M
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP          // Colon (:)
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP SYMBOL_SEPARATOR  BEEP                                 // 8
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                                                               // O
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BEEP                                 // 9
-    |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 0
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP   // Hyphen (-)
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                         // 6
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                                               // B
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                         // Equal (=)
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                                                                     // D
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                         // Slash (/)
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                               // X
+    |  BOOP SYMBOL_SEPARATOR BEEP                                                                                           // N
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                                               // C
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP   // Semicolon (;)
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP   // Exclamation (!)
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                                                     // K
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP   // Parenthesis )
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                         // Parenthesis (
+    |  BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                                               // Y
+    |  BOOP                                                                                                                 // T
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                         // 7
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                               // Z
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP   // Comma (,)
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                                                                     // G
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BOOP                                               // Q
+    |  BOOP SYMBOL_SEPARATOR BOOP                                                                                           // M
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP   // Colon (:)
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP SYMBOL_SEPARATOR BEEP                         // 8
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                                                                     // O
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BEEP                         // 9
+    |  BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP SYMBOL_SEPARATOR BOOP                         // 0
     ;
 
 signals : signal+ ;
@@ -221,4 +221,6 @@ CHARACTER_SEPARATOR: '   ' ;
 WORD_SEPARATOR: '       ' ;
 
 LINE_COMMENT : '//' .*? '\n' -> skip ;
+
+// NOTE: space skips EXTRA white space
 WS : [ \t\n\r]+ -> skip ;
