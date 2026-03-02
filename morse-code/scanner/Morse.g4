@@ -184,6 +184,26 @@ happy
     |  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP SYMBOL_SEPARATOR  BOOP                                 // 0
     ;
 
+signals
+    : small+
+    | big+
+    | huge+
+    ;
+
+small
+    : DOT | DASH
+    ;
+
+big
+    : DIT | DAH
+    | SYMBOL_SEPARATOR
+    ;
+
+huge
+    : BEEP | BOOP
+    | SYMBOL_SEPARATOR
+    ;
+
 // Keywords for lexer
 BEEP: 'beep' ;
 BOOP: 'boop' ;

@@ -66,4 +66,44 @@ public interface MorseListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitHappy(MorseParser.HappyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MorseParser#signals}.
+	 * @param ctx the parse tree
+	 */
+	void enterSignals(MorseParser.SignalsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MorseParser#signals}.
+	 * @param ctx the parse tree
+	 */
+	void exitSignals(MorseParser.SignalsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MorseParser#small}.
+	 * @param ctx the parse tree
+	 */
+	void enterSmall(MorseParser.SmallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MorseParser#small}.
+	 * @param ctx the parse tree
+	 */
+	void exitSmall(MorseParser.SmallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MorseParser#big}.
+	 * @param ctx the parse tree
+	 */
+	void enterBig(MorseParser.BigContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MorseParser#big}.
+	 * @param ctx the parse tree
+	 */
+	void exitBig(MorseParser.BigContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MorseParser#huge}.
+	 * @param ctx the parse tree
+	 */
+	void enterHuge(MorseParser.HugeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MorseParser#huge}.
+	 * @param ctx the parse tree
+	 */
+	void exitHuge(MorseParser.HugeContext ctx);
 }
