@@ -100,6 +100,18 @@ public class MorseBaseListener implements MorseListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSignal(MorseParser.SignalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSignal(MorseParser.SignalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSmall(MorseParser.SmallContext ctx) { }
 	/**
 	 * {@inheritDoc}

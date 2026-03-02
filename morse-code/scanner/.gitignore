@@ -37,3 +37,8 @@ env
 .env
 .venv
 venv
+
+# Ignore generated files
+**/Generated/*
+*.interp
+*.tokens
