@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "2.3.10"
     kotlin("plugin.spring") version "2.2.21"
@@ -11,8 +13,6 @@ plugins {
 
 group = "com.example.receiver"
 version = "0.0.1-SNAPSHOT"
-
-name="Receiver"
 description = "APIs for Morse Code Scanner"
 
 kotlin {
@@ -29,6 +29,10 @@ repositories {
 	mavenCentral()
 }
 
+tasks.named("compileJava") {
+    dependsOn("compileKotlin")
+}
+
 sourceSets {
     main {
         java.srcDirs("src/main/java", "src/main/kotlin")
@@ -41,7 +45,7 @@ sourceSets {
 }
 
 dependencies {
-	// Verify dependencies with pom too
+	// Verify dependencies with pom 
 
 	// Spring
     implementation("org.springframework.boot:spring-boot-starter")
@@ -53,26 +57,27 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 	// Kotlin
-	implementation("org.jetbrains.kotlin:kotlin-stdlib")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
 
 	// Test
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation(kotlin("test"))
+
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    testImplementation(kotlin("test"))
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<KotlinCompile> {
-    compilerOptions {
-        compilerOptions {
-			freeCompilerArgs.addAll(
-				"-Xjsr305=strict",
-				"-Xannotation-default-target=param-property"
-			)
-		}
-    }
+	compilerOptions {
+		freeCompilerArgs.addAll(
+			"-Xjsr305=strict",
+			"-Xannotation-default-target=param-property"
+		)
+	}
+}
+
+tasks.withType<JavaCompile> {
 }
 
 tasks.withType<Test> {
