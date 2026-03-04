@@ -16,12 +16,12 @@ version = "0.0.1-SNAPSHOT"
 description = "APIs for Morse Code Scanner"
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
