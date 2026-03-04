@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.example</groupId>
-	<artifactId>receiver</artifactId>
+	<groupId>com.example.radio</groupId>
+	<artifactId>radio</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	
-	<name>Receiver</name>
+	<name>Radio</name>
 	<description>APIs for Morse Code Scanner</description>
 
 	<properties>
@@ -48,10 +48,31 @@
             <version>${kotlin.version}</version>
         </dependency>
 
+		<!-- Hot reload -->
 		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+		<!-- Two way communication -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+		<!-- Real time chat -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+		<!-- TODO: add jackson -->
+		
+		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
@@ -82,6 +103,12 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+
+		<!-- Other tests -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+		</dependency>
 
 		<!-- There are mocking libraries too. Check them out everywhere. -->
 	</dependencies>

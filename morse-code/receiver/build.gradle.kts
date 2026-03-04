@@ -8,10 +8,10 @@ plugins {
 	id("org.springframework.boot") version "4.0.3"
 	id("io.spring.dependency-management") version "1.1.7"
 
-	id("java")
+	java
 }
 
-group = "com.example.receiver"
+group = "com.example.radio"
 version = "0.0.1-SNAPSHOT"
 description = "APIs for Morse Code Scanner"
 
@@ -45,16 +45,31 @@ sourceSets {
 }
 
 dependencies {
-	// Verify dependencies with pom 
-
 	// Spring
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-	// --- DevTools (hot reload in development) ---
+	// Lexer and Parser
+	implementation("org.antlr:antlr4-runtime:4.13.2")
+
+	// DevTools (hot reload in development)
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	// Websocket and SSE
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+	// Message Broker using JSON
+	implementation("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+	
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+	// Security
+	implementation("org.springframework.security:spring-security-messaging")
 
 	// Kotlin
 	implementation(kotlin("stdlib"))
@@ -65,6 +80,7 @@ dependencies {
 
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
