@@ -11,7 +11,7 @@ plugins {
 	java
 }
 
-group = "com.example.radio"
+group = "com.vayu.radio"
 version = "0.0.1-SNAPSHOT"
 description = "APIs for Morse Code Scanner"
 
