@@ -1,5 +1,4 @@
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+package com.vayu.radio;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -231,14 +230,15 @@ public class Translator extends MorseBaseListener {
     }
 
     @Override public void exitWord(MorseParser.WordContext ctx) {
+        if (word.length() > 0) message.append(' ');
         message.append(word.toString());
-        if (word.length() > 0)
-            message.append(' ');
-        
         word.setLength(0);
     }
 
     public String getTranslation() {
-        return message.toString();
+        String translation = message.toString();
+        message.append(0);
+
+        return translation;
     }
 }
