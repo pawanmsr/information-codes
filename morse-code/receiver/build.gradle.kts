@@ -16,12 +16,12 @@ version = "0.0.1-SNAPSHOT"
 description = "APIs for Morse Code Scanner"
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -51,7 +51,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-	// Lexer and Parser
+	// ANTLR Lexer and Parser
 	implementation("org.antlr:antlr4-runtime:4.13.2")
 
 	// DevTools (hot reload in development)
