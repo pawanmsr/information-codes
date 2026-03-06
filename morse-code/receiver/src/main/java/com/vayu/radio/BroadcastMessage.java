@@ -10,7 +10,21 @@ public class BroadcastMessage {
 
     public BroadcastMessage(String sender, String content) {
         this.sender = sender;
-        this.content = content;
+
+        CharStream charStream = CharStreams.fromString(morseCode.toString());
+
+        MorseLexer lexer = new MorseLexer(charStream);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        MorseParser parser = new MorseParser(tokens);
+
+        ParseTree tree = parser.message();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        Translator listener = new Translator();
+
+        walker.walk(listener, tree);
+
+        this.content = listener.getTranslation();
+        
         this.time = LocalDateTime.now().format(
             DateTimeFormatter.ofPattern("HH:mm:ss")
         );

@@ -11,7 +11,7 @@
 	<description>APIs for Morse Code Scanner</description>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<kotlin.version>2.3.10</kotlin.version>
 		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 		<kotlin.compiler.daemon>false</kotlin.compiler.daemon>
@@ -60,6 +60,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
 		<!-- Real time chat -->
