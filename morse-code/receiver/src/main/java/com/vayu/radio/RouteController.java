@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,21 +24,26 @@ public class RouteController {
 
     @CrossOrigin
     @GetMapping("/")
-    String home() {
-        return "APIs: /morse /plaintext.";
+    ResponseEntity<PlainText> home() {
+        return new PlainText(
+            "APIs: /morse /plaintext.",
+            ""
+        );
     }
 
     @CrossOrigin
 	@PostMapping("/morse")
-	String translate(@RequestBody MorseMessage message) {
+	ResponseEntity<PlainText> translate(@RequestBody MorseMessage message) {
         morseCode.append(message.getContent());
-        // TODO: check for null data
-		return "Get translation from /plaintext!";
+		return new PlainText(
+            "Get translation from /plaintext!",
+            ""
+        );
 	}
 
     @CrossOrigin
     @GetMapping("/plaintext")
-    String transmit() {
+    ResponseEntity<PlainText> transmit() {
         CharStream charStream = CharStreams.fromString(morseCode.toString());
 
         MorseLexer lexer = new MorseLexer(charStream);
@@ -48,9 +55,11 @@ public class RouteController {
         Translator listener = new Translator();
 
         walker.walk(listener, tree);
-        String translation = listener.getTranslation();
-
         morseCode.setLength(0);
-        return translation;
+
+        return new PlainText(
+            listener.getTranslation(),
+            ""
+        );
     }
 }
