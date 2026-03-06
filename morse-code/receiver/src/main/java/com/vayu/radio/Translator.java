@@ -226,7 +226,12 @@ public class Translator extends MorseBaseListener {
 
     @Override public void exitCharacter(MorseParser.CharacterContext ctx) {
         // lower case for unknown and uppercase otherwise
-        word.append(ENGLISH.getOrDefault(ctx.getText(), "<unk>"));
+        String morse = ctx.getText();
+        if (morse.length() == 0) {
+            return ;
+        }
+
+        word.append(ENGLISH.getOrDefault(morse, "<unk>"));
     }
 
     @Override public void exitWord(MorseParser.WordContext ctx) {
