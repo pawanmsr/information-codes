@@ -222,5 +222,4 @@ WORD_SEPARATOR: '       ' ;
 
 LINE_COMMENT : '//' .*? '\n' -> skip ;
 
-// NOTE: space skips EXTRA white space
-WS : [ \t\n\r]+ -> skip ;
+WS : [\t\n\r]+ -> skip ;
