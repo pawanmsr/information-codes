@@ -5,7 +5,7 @@
     import { play } from './utility.svelte';
     import { PUBLIC_SENDER } from '$env/static/public';
     
-    import { display, post, get } from './translation.svelte';
+    import { display, post, get, transmit } from './translation.svelte';
     import { type MorseMessage, MessageType } from './translation.svelte';
 
     const tickSize: number = 64;
@@ -21,6 +21,7 @@
             type: MessageType.COMMUNICATION
         };
 
+        transmit(message);
         post(message);
         morse = "";
     }
@@ -61,7 +62,7 @@
             record("boop")// TODO: remove hardcoding
         }
 
-        if (morse.length > 128) {
+        if (morse.length > 32) {
             send();
         }
     }
