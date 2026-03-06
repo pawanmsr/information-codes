@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +20,13 @@ public class RouteController {
 
     RouteController() {}
 
+    @CrossOrigin
     @GetMapping("/")
     String home() {
         return "APIs: /morse /plaintext.";
     }
 
+    @CrossOrigin
 	@PostMapping("/morse")
 	String translate(@RequestBody MorseMessage message) {
         morseCode.append(message.getContent());
@@ -31,6 +34,7 @@ public class RouteController {
 		return "Get translation from /plaintext!";
 	}
 
+    @CrossOrigin
     @GetMapping("/plaintext")
     String transmit() {
         CharStream charStream = CharStreams.fromString(morseCode.toString());
@@ -44,6 +48,9 @@ public class RouteController {
         Translator listener = new Translator();
 
         walker.walk(listener, tree);
-        return listener.getTranslation();
+        String translation = listener.getTranslation();
+
+        morseCode.setLength(0);
+        return translation;
     }
 }
