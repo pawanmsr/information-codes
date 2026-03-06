@@ -38,6 +38,7 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
+		"@stomp/stompjs": "^7.3.0",
 		"ws": "^8.19.0"
 	}
 }
