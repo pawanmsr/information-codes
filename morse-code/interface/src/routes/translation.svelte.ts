@@ -4,12 +4,12 @@ const scrollToBottom = async (node: HTMLElement) => {
     node.scroll({ top: node.scrollHeight });
 };
 
-export async function display(response: Promise<string>) {
-    const text: string = await response;
+export async function display(response: Promise<PlainText>) {
+    const plaintext: PlainText = await response;
     const element = document.getElementById("translation");
     
     if (element) {
-        element.innerText = text;
+        element.innerText = plaintext.content;
         scrollToBottom(element);
     }
 };

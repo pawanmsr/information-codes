@@ -44,6 +44,7 @@ public class RouteController {
     @CrossOrigin
     @GetMapping("/plaintext")
     ResponseEntity<PlainText> transmit() {
+        System.out.println(morseCode.toString());
         CharStream charStream = CharStreams.fromString(morseCode.toString());
 
         MorseLexer lexer = new MorseLexer(charStream);

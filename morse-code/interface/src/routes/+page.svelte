@@ -8,11 +8,30 @@
     import { display, post, get } from './translation.svelte';
     import { type MorseMessage, MessageType } from './translation.svelte';
 
-    const tickSize: number = 50;
+    const tickSize: number = 64;
 
     let pushTime: number;
     let releaseTime: number = 0;
     let morse: string = $state("");
+
+    function send() {
+        const message: MorseMessage = {
+            sender: PUBLIC_SENDER,
+            content: morse,
+            type: MessageType.COMMUNICATION
+        };
+
+        post(message);
+        morse = "";
+    }
+
+    function record(signal: string) {
+        if (morse.length && !morse.endsWith(' ')) {
+            morse += ' ';
+        }
+
+        morse += signal;
+    }
 
     function pushed() {
         pushTime = Date.now();
@@ -27,6 +46,7 @@
             spaces = 1;
         }
 
+        morse = morse.trim();
         if (morse.length) {
             morse += " ".repeat(spaces);
         }
@@ -36,22 +56,18 @@
         releaseTime = Date.now();
         let time = releaseTime - pushTime;
         if (time >= tickSize && time < 3 * tickSize) {
-            morse += "beep"; // TODO: remove hardcoding
+            record("beep");  // TODO: remove hardcoding
         } else if (time >= 3 * tickSize && time < 9 * tickSize) {
-            morse += "boop"; // TODO: remove hardcoding
+            record("boop")// TODO: remove hardcoding
+        }
+
+        if (morse.length > 128) {
+            send();
         }
     }
 
     function connect() {
-        const message: MorseMessage = {
-            sender: PUBLIC_SENDER,
-            content: morse,
-            type: MessageType.COMMUNICATION
-        };
-
-        post(message)
-
-        morse = "";
+        send();
         display(get());
     }
 </script>
