@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.SimpleRabbitListenerContainerFactory;
 
 @Configuration
 public class RabbitMQConfig {
@@ -27,6 +28,16 @@ public class RabbitMQConfig {
         
         factory.setUsername(username);
         factory.setPassword(password);
+        
+        return factory;
+    }
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        
+        factory.setConnectionFactory(connectionFactory());
+        factory.setMaxConcurrentConsumers(8);
         
         return factory;
     }

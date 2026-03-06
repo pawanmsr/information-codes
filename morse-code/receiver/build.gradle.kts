@@ -66,6 +66,7 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	
 	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 	// Security
