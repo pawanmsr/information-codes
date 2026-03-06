@@ -26,6 +26,11 @@ export interface MorseMessage {
     type: MessageType
 }
 
+export interface PlainText {
+    content: string,
+    error: string
+}
+
 function getStandardHeaders(): Headers {
     const headers: Headers = new Headers();
     headers.set("Content-Type", "application/json");
@@ -35,7 +40,7 @@ function getStandardHeaders(): Headers {
 }
 
 export async function post(message: MorseMessage,
-    route: string = `${PUBLIC_API}${PUBLIC_MORSE}`): Promise<string> {
+    route: string = `${PUBLIC_API}${PUBLIC_MORSE}`): Promise<PlainText> {
     
 
     const request: RequestInfo = new Request(route, {
@@ -46,12 +51,12 @@ export async function post(message: MorseMessage,
 
     return fetch(request)
         .then(res => {
-            return res.text();
+            return res.json();
         });
 };
 
 export async function get(route: string = `${PUBLIC_API}${PUBLIC_PLAINTEXT}`):
-    Promise<string> {
+    Promise<PlainText> {
     const request: RequestInfo = new Request(route, {
         method: "GET",
         headers: getStandardHeaders()
@@ -59,6 +64,6 @@ export async function get(route: string = `${PUBLIC_API}${PUBLIC_PLAINTEXT}`):
 
     return fetch(request)
         .then(res => {
-            return res.text();
+            return res.json();
         });
 }
