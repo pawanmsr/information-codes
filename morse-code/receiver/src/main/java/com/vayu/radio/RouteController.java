@@ -25,20 +25,20 @@ public class RouteController {
     @CrossOrigin
     @GetMapping("/")
     ResponseEntity<PlainText> home() {
-        return new PlainText(
+        return ResponseEntity.ok(new PlainText(
             "APIs: /morse /plaintext.",
             ""
-        );
+        ));
     }
 
     @CrossOrigin
 	@PostMapping("/morse")
 	ResponseEntity<PlainText> translate(@RequestBody MorseMessage message) {
         morseCode.append(message.getContent());
-		return new PlainText(
+		return ResponseEntity.ok(new PlainText(
             "Get translation from /plaintext!",
             ""
-        );
+        ));
 	}
 
     @CrossOrigin
@@ -57,9 +57,9 @@ public class RouteController {
         walker.walk(listener, tree);
         morseCode.setLength(0);
 
-        return new PlainText(
+        return ResponseEntity.ok(new PlainText(
             listener.getTranslation(),
             ""
-        );
+        ));
     }
 }
