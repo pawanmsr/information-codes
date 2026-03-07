@@ -1,3 +1,4 @@
+import { getElement } from './utility.svelte';
 import { PUBLIC_API, PUBLIC_MORSE, PUBLIC_PLAINTEXT } from '$env/static/public';
 import { PUBLIC_APP, PUBLIC_BROKER, PUBLIC_TOPIC } from '$env/static/public';
 
@@ -6,24 +7,26 @@ import { WebSocket } from 'ws';
 
 
 // Constants
-const client = new Client({
+const BLINK: string = "animate-pulse";
+
+export const client = new Client({
     brokerURL: PUBLIC_BROKER,
     onConnect: () => {
         client.subscribe(PUBLIC_TOPIC, message => {
-            const response = new Promise((resolve) => {
+            const response: Promise<PlainText> = new Promise((resolve) => {
                 resolve(JSON.parse(message.body));
             });
-            display(JSON.parse(message.body));
+
+            displayMessage(response);
         });
     },
 });
 
-client.activate();
-
 export const SEPARATORS = {
     SPACE: " ",
     CHARACTER: 3,
-    WORD: 7
+    WORD: 7,
+    MESSAGE: 64
 }
 
 export const SYMBOL = [
@@ -31,19 +34,19 @@ export const SYMBOL = [
         NAME: "short",
         ONE: '.',
         THREE: '-',
-        SEPARATOR: ''
+        SEPARATOR: 0
     },
     {
         NAME: "long",
         ONE: "dit",
         THREE: "dah",
-        SEPARATOR: ' '
+        SEPARATOR: 1
     },
     {
         NAME: "happy",
         ONE: "beep",
         THREE: "boop",
-        SEPARATOR: ' '
+        SEPARATOR: 1
     }
 ]
 
@@ -66,23 +69,13 @@ export interface PlainText {
     error: string
 }
 
-export function transmit(message: MorseMessage) {
-    client.publish({
-        destination: `${PUBLIC_APP}${PUBLIC_MORSE}`,
-        body: JSON.stringify(message)
-    });
-}
-
+// Display functions
 const scrollToBottom = async (node: HTMLElement) => {
     node.scroll({ top: node.scrollHeight });
 };
 
-export async function display(response: Promise<PlainText>) {
-    let element = null;
-    if (typeof document !== 'undefined') {
-        element = document.getElementById("translation");
-    }
-
+export async function displayMessage(response: Promise<PlainText>) {
+    let element = getElement("translation");
     const plaintext: PlainText = await response;
     
     if (element) {
@@ -91,6 +84,15 @@ export async function display(response: Promise<PlainText>) {
     }
 };
 
+export function checkConnection() {
+    let element = getElement("connection");
+    if (element) {
+        if (client.connected) element.classList.remove(BLINK);
+        else element.classList.add(BLINK);
+    }
+}
+
+// API calls
 function getStandardHeaders(): Headers {
     const headers: Headers = new Headers();
     headers.set("Content-Type", "application/json");
@@ -125,4 +127,26 @@ export async function get(route: string = `${PUBLIC_API}${PUBLIC_PLAINTEXT}`):
         .then(res => {
             return res.json();
         });
+}
+
+// Transmission
+client.onWebSocketError = () => {
+    client.deactivate();
+    checkConnection();
+}
+
+client.onWebSocketClose = () => {
+    checkConnection();
+}
+
+client.onStompError = () => {
+    client.deactivate();
+    checkConnection();
+}
+
+export function transmit(message: MorseMessage) {
+    client.publish({
+        destination: `${PUBLIC_APP}${PUBLIC_MORSE}`,
+        body: JSON.stringify(message)
+    });
 }
