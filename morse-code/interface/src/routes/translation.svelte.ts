@@ -20,6 +20,33 @@ const client = new Client({
 
 client.activate();
 
+export const SEPARATORS = {
+    SPACE: " ",
+    CHARACTER: 3,
+    WORD: 7
+}
+
+export const SYMBOL = [
+    {
+        NAME: "short",
+        ONE: '.',
+        THREE: '-',
+        SEPARATOR: ''
+    },
+    {
+        NAME: "long",
+        ONE: "dit",
+        THREE: "dah",
+        SEPARATOR: ' '
+    },
+    {
+        NAME: "happy",
+        ONE: "beep",
+        THREE: "boop",
+        SEPARATOR: ' '
+    }
+]
+
 
 // Types
 export enum MessageType {

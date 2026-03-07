@@ -1,3 +1,10 @@
+export const TICK = {
+    QUANTA: 25,
+    MINIMUM: 25,
+    MAXIMUM: 2500,
+    DEFAULT: 250
+}
+
 // Duration in seconds
 export function play(frequency: number, duration: number, type: OscillatorType = "square") {
     const context = new window.AudioContext();

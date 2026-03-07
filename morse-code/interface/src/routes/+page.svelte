@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+
     import './page.css';
     import Tap from './Tap.svelte';
     import Push from './Push.svelte';
@@ -7,17 +9,21 @@
     import Indicator from './Indicator.svelte';
 
     import { play } from './utility.svelte';
+    import { TICK } from './utility.svelte';
 
     import { PUBLIC_SENDER } from '$env/static/public';
     
     import { display, post, get, transmit } from './translation.svelte';
     import { type MorseMessage, MessageType } from './translation.svelte';
 
-    const tickSize: number = 64;
+    import { SYMBOL } from './translation.svelte';
+
+    let morse: string = $state("");
+    const code: number = $state(2);
+    const tick: number = $state(TICK.DEFAULT);
 
     let pushTime: number;
     let releaseTime: number = 0;
-    let morse: string = $state("");
 
     function send() {
         const message: MorseMessage = {
@@ -42,7 +48,7 @@
     function pushed() {
         pushTime = Date.now();
         let time = pushTime - releaseTime;
-        let spaces: number = Math.max(1, time / (3 * tickSize));
+        let spaces: number = Math.max(1, time / (3 * tick));
         
         if (spaces > 3) {
             spaces = 7;
@@ -61,9 +67,9 @@
     function released() {
         releaseTime = Date.now();
         let time = releaseTime - pushTime;
-        if (time >= tickSize && time < 3 * tickSize) {
+        if (time >= tick && time < 3 * tick) {
             record("beep");  // TODO: remove hardcoding
-        } else if (time >= 3 * tickSize && time < 9 * tickSize) {
+        } else if (time >= 3 * tick && time < 9 * tick) {
             record("boop")// TODO: remove hardcoding
         }
 
@@ -93,7 +99,7 @@
                 <Adjust value="+" />
             </div>
             <div class="col-span-3 flex align-center justify-center">
-                <Indicator />
+                <Indicator id="tick" />
             </div>
             <div class="col-span-1 flex align-center justify-start">
                 <Adjust value="-" />
@@ -109,7 +115,7 @@
                 <Adjust value="<" />
             </div>
             <div class="col-span-3 flex align-center justify-center">
-                <Indicator />
+                <Indicator id="code" />
             </div>
             <div class="col-span-1 flex align-center justify-start">
                 <Adjust value=">" />
