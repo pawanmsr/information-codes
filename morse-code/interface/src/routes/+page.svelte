@@ -1,8 +1,13 @@
 <script lang="ts">
     import './page.css';
+    import Tap from './Tap.svelte';
     import Push from './Push.svelte';
-    import Clear from './Connect.svelte';
+    import Adjust from './Adjust.svelte';
+    import Connect from './Connect.svelte';
+    import Indicator from './Indicator.svelte';
+
     import { play } from './utility.svelte';
+
     import { PUBLIC_SENDER } from '$env/static/public';
     
     import { display, post, get, transmit } from './translation.svelte';
@@ -77,31 +82,53 @@
     place-items-center column-1 p-4 gap-4">
     <div class="w-sm h-60 row-span-3
         wrap-break-word overflow-y-scroll scroll-smooth
-        rounded-sm bg-slate-950 p-8 mx-4 border-4 border-amber-400
+        rounded-sm bg-slate-950 p-8 mx-4 border-4 border-gray-800
         text-stone-50 uppercase font-mono cursor-crosshair whitespace-pre-wrap"
         id="translation">
     </div>
+
     <div class="w-sm h-20 row-span-1 p-8 grid grid-cols-3">
-        <div class="col-span-1">
-            <!-- TODO: add dit indicator -->
+        <div class="col-span-1 grid grid-cols-5">
+            <div class="col-span-1 flex align-center justify-end">
+                <Adjust value="+" />
+            </div>
+            <div class="col-span-3 flex align-center justify-center">
+                <Indicator />
+            </div>
+            <div class="col-span-1 flex align-center justify-start">
+                <Adjust value="-" />
+            </div>
         </div>
+
         <div class="col-span-1 flex align-center justify-center">
-            <Clear onclick={connect} />
+            <Connect onclick={connect} />
         </div>
-        <div class="col-span-1">
-            <!-- TODO: add dah indicator -->
+
+        <div class="col-span-1 grid grid-cols-5">
+            <div class="col-span-1 flex align-center justify-end">
+                <Adjust value="<" />
+            </div>
+            <div class="col-span-3 flex align-center justify-center">
+                <Indicator />
+            </div>
+            <div class="col-span-1 flex align-center justify-start">
+                <Adjust value=">" />
+            </div>
         </div>
     </div>
+
     <div class="w-sm h-40 row-span-2 p-8
         grid grid-cols-7">
-        <div class="col-span-2">
-            <!-- TODO: add unit time control -->
+        <div class="col-span-2 flex align-start justify-end">
+            <Tap value="•" />
         </div>
+
         <div class="col-span-3 flex align-center justify-center">
             <Push onmousedown={pushed} onmouseup={released} onmouseleave={released} />
         </div>
-        <div class="col-span-2">
-            <!-- TODO: add signal type control -->
+        
+        <div class="col-span-2 flex align-start justify-start">
+            <Tap value="-" />
         </div>
     </div>
 </div>

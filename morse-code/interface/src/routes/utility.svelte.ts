@@ -1,3 +1,4 @@
+// Duration in seconds
 export function play(frequency: number, duration: number, type: OscillatorType = "square") {
     const context = new window.AudioContext();
     const oscillator = context.createOscillator();
@@ -12,5 +13,5 @@ export function play(frequency: number, duration: number, type: OscillatorType =
     gain.gain.setValueAtTime(0.5, context.currentTime);
 
     oscillator.start(context.currentTime);
-    oscillator.stop(context.currentTime + duration / 1000);
+    oscillator.stop(context.currentTime + duration);
 };

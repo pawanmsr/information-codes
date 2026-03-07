@@ -1,12 +1,15 @@
-import { PUBLIC_API, PUBLIC_MORSE, PUBLIC_PLAINTEXT, PUBLIC_APP, PUBLIC_BROKER } from '$env/static/public';
+import { PUBLIC_API, PUBLIC_MORSE, PUBLIC_PLAINTEXT } from '$env/static/public';
+import { PUBLIC_APP, PUBLIC_BROKER, PUBLIC_TOPIC } from '$env/static/public';
 
 import { Client } from '@stomp/stompjs';
 import { WebSocket } from 'ws';
 
+
+// Constants
 const client = new Client({
     brokerURL: PUBLIC_BROKER,
     onConnect: () => {
-        client.subscribe('/topic/message', message => {
+        client.subscribe(PUBLIC_TOPIC, message => {
             const response = new Promise((resolve) => {
                 resolve(JSON.parse(message.body));
             });
@@ -16,6 +19,25 @@ const client = new Client({
 });
 
 client.activate();
+
+
+// Types
+export enum MessageType {
+    COMMUNICATION,
+    CONNECTION,
+    DISASSOCIATION
+}
+
+export interface MorseMessage {
+    sender: string,
+    content: string,
+    type: MessageType
+}
+
+export interface PlainText {
+    content: string,
+    error: string
+}
 
 export function transmit(message: MorseMessage) {
     client.publish({
@@ -41,23 +63,6 @@ export async function display(response: Promise<PlainText>) {
         scrollToBottom(element);
     }
 };
-
-export enum MessageType {
-    COMMUNICATION,
-    CONNECTION,
-    DISASSOCIATION
-}
-
-export interface MorseMessage {
-    sender: string,
-    content: string,
-    type: MessageType
-}
-
-export interface PlainText {
-    content: string,
-    error: string
-}
 
 function getStandardHeaders(): Headers {
     const headers: Headers = new Headers();
@@ -89,7 +94,7 @@ export async function get(route: string = `${PUBLIC_API}${PUBLIC_PLAINTEXT}`):
         headers: getStandardHeaders()
     });
 
-    return await fetch(request)
+    return fetch(request)
         .then(res => {
             return res.json();
         });
