@@ -96,7 +96,7 @@
                     SEPARATORS.WORD : SEPARATORS.CHARACTER);
         }
 
-        if (spaces >= SYMBOL[code].SEPARATOR) {
+        if (SEPARATORS.WORD > spaces && spaces >= SYMBOL[code].SEPARATOR) {
             spaces = (Math.abs(spaces - SEPARATORS.CHARACTER) < 
                 Math.abs(spaces - SYMBOL[code].SEPARATOR) ?
                     SEPARATORS.CHARACTER : SYMBOL[code].SEPARATOR);
@@ -105,15 +105,15 @@
         morse = morse.trim();
         if (morse.length) {
             morse += SEPARATORS.SPACE.repeat(spaces);
-            if (spaces == SEPARATORS.WORD) {
+            if (spaces === SEPARATORS.WORD) {
                 send();
             }
         }
     }
 
     function symbol(symbol: string) {
-        if (morse.length && !morse.endsWith(' ')) {
-            morse += ' ';
+        if (morse.length && !morse.endsWith(" ".repeat(SYMBOL[code].SEPARATOR))) {
+            morse += " ".repeat(SYMBOL[code].SEPARATOR);
         }
 
         morse += symbol;
