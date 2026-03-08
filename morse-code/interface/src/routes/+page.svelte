@@ -13,9 +13,9 @@
 
     import { PUBLIC_SENDER } from '$env/static/public';
     
+    import { SYMBOL, SEPARATORS } from './translation.svelte';
     import { displayMessage, MessageType } from './translation.svelte';
-    import { post, get, transmit, SEPARATORS } from './translation.svelte';
-    import { SYMBOL, client, checkConnection } from './translation.svelte';
+    import { post, get, transmit, client, checkConnection } from './translation.svelte';
 
 
     // Communication
@@ -46,6 +46,13 @@
         checkConnection();
         send();
     }
+
+    const ping = setInterval(() => {
+        if (Math.floor(releaseTime) < Math.ceil(pushTime)) return ;
+
+        const silence = Date.now() - Math.max(pushTime, releaseTime);
+        if (silence / tick > SEPARATORS.CHARACTER) send();
+    }, TICK.MINIMUM * SEPARATORS.CHARACTER);
 
     // Message Configuration
     let code: number = $state(2);
@@ -105,9 +112,6 @@
         morse = morse.trim();
         if (morse.length) {
             morse += SEPARATORS.SPACE.repeat(spaces);
-            if (spaces === SEPARATORS.WORD) {
-                send();
-            }
         }
     }
 
@@ -117,9 +121,6 @@
         }
 
         morse += symbol;
-        if (morse.length > SEPARATORS.MESSAGE) {
-            send();
-        }
     }
 
     function record() {

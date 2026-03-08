@@ -10,7 +10,8 @@ export const TICK = {
 export const INSTRUCTIONS = "Copyright © 2026 Vayu.\n \
         Press 'connect' to retrieve translation.\n \
         Press 'connect' twice to establish interchange - \
-        blinking stops and translations are retrieved automatically.\n"
+        blinking stops and translations are retrieved automatically.\n \
+        \n"
 
 export function getElement(id: string) {
     let element = null;
