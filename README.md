@@ -38,9 +38,11 @@ Display signals and forms from audio recording.
 
 ### Morse code
 
+Practice transmitting and understanding morse code. View [README](/morse-code/README.md) for more information.
+
 - [ ] Audio -> Morse code
-- [x] Generated Morse code -> Text
-- [ ] Text -> Morse code
+- [x] Morse code -> Text
+- [x] ~~Text -> Morse code~~
 
 ## Colour Codes
 
