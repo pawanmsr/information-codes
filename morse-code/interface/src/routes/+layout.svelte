@@ -8,19 +8,15 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <div class="h-screen w-screen bg-gray-200">
-    <header class="grid min-h-10 grid bg-gray-400">
-        <div class="col-span-1">
-        </div>
+	<header class="grid min-h-10 bg-gray-400">
+		<div class="col-span-1"></div>
 
-        <div class="col-span-3">
-            <h1 class="text-center text-black uppercase text-xl text-bold">
-                Morse Radio
-            </h1>
-        </div>
+		<div class="col-span-3">
+			<h1 class="text-bold text-center text-xl text-black uppercase">Morse Radio</h1>
+		</div>
 
-        <div class="col-span-1">
-        </div>
-    </header>
+		<div class="col-span-1"></div>
+	</header>
 
-    {@render children()}
+	{@render children()}
 </div>

@@ -1,14 +1,17 @@
 <script>
 	import './page.css';
-	
-    let props = $props();
+
+	let props = $props();
 </script>
 
-<button class="text-lg font-bold transform-gpu rounded-full
-	shadow-[0_4px_0_hsl(240,100%,30%)] text-blue-50 uppercase
-    text-center -translate-y-2 active:-translate-y-1 bg-blue-800
-	active:shadow-[0_1px_0_hsl(240,100%,30%)] cursor-grab" {...props}>
-    {props.value}
+<button
+	class="-translate-y-2 transform-gpu cursor-grab rounded-full
+	bg-blue-800 text-center text-lg
+    font-bold text-blue-50 uppercase shadow-[0_4px_0_hsl(240,100%,30%)]
+	active:-translate-y-1 active:shadow-[0_1px_0_hsl(240,100%,30%)]"
+	{...props}
+>
+	{props.value}
 </button>
 
 <style>

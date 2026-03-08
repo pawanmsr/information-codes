@@ -11,7 +11,7 @@ public class Translator extends MorseBaseListener {
     private static final Map<String, String> ENGLISH = new HashMap<String, String>();
     
     static {
-        ENGLISH.put("._", "A");
+        ENGLISH.put(".-", "A");
         ENGLISH.put("dit dah", "A");
         ENGLISH.put("beep boop", "A");
         
