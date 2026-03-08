@@ -39,7 +39,7 @@ Display signals and forms from audio recording.
 ### Morse code
 
 - [ ] Audio -> Morse code
-- [ ] Morse code -> Text
+- [x] Generated Morse code -> Text
 - [ ] Text -> Morse code
 
 ## Colour Codes
