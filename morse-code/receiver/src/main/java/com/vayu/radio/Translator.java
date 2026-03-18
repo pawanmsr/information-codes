@@ -1,7 +1,7 @@
 package com.vayu.radio;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 // Listener is better in comparison to Visitor for simple translation.
 public class Translator extends MorseBaseListener {
@@ -242,7 +242,7 @@ public class Translator extends MorseBaseListener {
 
     public String getTranslation() {
         String translation = message.toString();
-        message.append(0);
+        message.setLength(0);
 
         return translation;
     }
